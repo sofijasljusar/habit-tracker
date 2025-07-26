@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block container %}
+	<div class="container-login100" style="background-image: url('{% static 'project8/images/bg.jpeg' %}');">
+        {% block content %}
+        <div class="wrap-login100 p-l-55 p-r-55 p-t-30 p-b-30">
+			<form class="login100-form validate-form" method="post">
+				{% csrf_token %}
+                <span class="login100-form-title p-b-37">
+					{{ title }}
+				</span>
+                
+                {% for field in form %}
+                    <div class="wrap-input100 validate-input m-b-20 transparent" data-validate="{{ field.label }}">
+                        {{ field }}
+                        <span class="focus-input100"></span>
+				    </div>
+                    {%  if field.errors %}
+                        <div class="text-danger small mt-1 mb-3">{{ field.errors.0 }}</div>
+                    {% endif %}
+                {% endfor %}
+
+				<div class="container-login100-form-btn">
+					<button class="login100-form-btn" type="submit">
+						{{ title }}
+					</button>
+				</div>
+
+
+				<div class="text-center p-t-20">
+                    {% if title == "Log In" %}
+					    <a href="{% url 'signup' %}" class="txt2 hov1">Sign Up</a>
+				    {% else %}
+					    <a href="{% url 'login' %}" class="txt2 hov1">Back to Log In</a>
+                    {% endif %}
+                </div>
+			</form>
+		</div>
+        {% endblock content %}
+	</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>    
+<script src="{% static 'project8/js/scripts.js' %}"></script>
+{% endblock container%}
+

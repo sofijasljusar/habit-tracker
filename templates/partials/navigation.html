@@ -8,7 +8,7 @@
             </a>
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                 <li>
-                    <a href="#" class="nav-link px-2 text-info">Home</a>
+                    <a href="{% url 'home' %}" class="nav-link px-2 text-info">Home</a>
                 </li>
                 <li>
                     <a href="#" class="nav-link px-2 text-white">History</a>
@@ -17,7 +17,16 @@
                     <a href="#" class="nav-link px-2 text-white">About</a>
                 </li>
             </ul>
-
+            <div class="text-end">
+            {% if user.is_authenticated %}
+                <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-outline-light me-2">Logout</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-outline-light me-2">Login</a>
+            {% endif %}
+        </div>
         </div>
     </div>
 </header>

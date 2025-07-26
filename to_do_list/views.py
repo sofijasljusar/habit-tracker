@@ -4,4 +4,4 @@ from django.views.generic import TemplateView
 
 # Create your views here.
 class HomeView(TemplateView):
-    template_name = "day-detail-page.html"
+    template_name = "signup.html"

@@ -15,13 +15,14 @@
     <body>
         <!-- Navigation-->
         {% include "partials/navigation.html" %}
-
-        <div class="container fullscreen-size my-4">
-            {%  block content %}
-            <!-- Content goes here -->
-            {%  endblock content %}
-        </div>
-
+        {% block container %}
+            <!-- Container for full screen pages -->
+            <div class="container fullscreen-size my-4">
+                {%  block content %}
+                <!-- Content goes here -->
+                {%  endblock content %}
+            </div>
+        {%  endblock container %}
         <!-- Footer-->
         {% include "partials/footer.html" %}
 

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block container %}
+	<div class="container-login100" style="background-image: url('{% static 'project8/images/bg.jpeg' %}');">
+        {% block content %}
+        <div class="wrap-login100 p-l-55 p-r-55 p-t-30 p-b-30">
+			<form class="login100-form validate-form">
+				<span class="login100-form-title p-b-37">
+					Log In
+				</span>
+
+				<div class="wrap-input100 validate-input m-b-20 transparent" data-validate="Enter username or email">
+					<input class="input100" type="text" name="username" placeholder="username or email">
+					<span class="focus-input100"></span>
+				</div>
+
+				<div class="wrap-input100 validate-input m-b-25 transparent" data-validate = "Enter password">
+					<input class="input100" type="password" name="pass" placeholder="password">
+					<span class="focus-input100"></span>
+				</div>
+
+				<div class="container-login100-form-btn">
+					<button class="login100-form-btn">
+						Log In
+					</button>
+				</div>
+
+
+				<div class="text-center p-t-20">
+					<a href="#" class="txt2 hov1">
+						Sign Up
+					</a>
+				</div>
+			</form>
+		</div>
+        {% endblock content %}
+	</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>    
+<script src="{% static 'project8/js/scripts.js' %}"></script>
+{% endblock container%}
+

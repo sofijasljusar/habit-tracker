@@ -36,3 +36,10 @@ class SignUpView(CreateView):
         context = super().get_context_data(**kwargs)
         context["title"] = "Sign Up"
         return context
+
+
+class HistoryMenuView(TemplateView):
+    template_name = "history-menu.html"
+
+class AboutView(TemplateView):
+    template_name = "about.html"

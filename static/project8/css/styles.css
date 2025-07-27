@@ -372,3 +372,15 @@ button:hover {
 .p-b-37 {padding-bottom: 37px}
 .m-b-20 {margin-bottom: 20px}
 .m-b-25 {margin-bottom: 25px}
+
+
+.menu-button {
+  width: 300px;
+}
+
+.bg-fullscreen {
+  background-image: url("../images/bg-01.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}

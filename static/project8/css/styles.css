@@ -1,6 +1,5 @@
 .fullscreen-size {
     min-height: 80vh;
-    /*border: 2px solid black;*/
 }
 
 input {
@@ -378,9 +377,29 @@ button:hover {
   width: 300px;
 }
 
-.bg-fullscreen {
-  background-image: url("../images/bg-01.jpg");
+.bg {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
+}
+
+
+.bg-1 {
+  background-image: url('../images/bg-01.jpg');
+}
+
+.bg-2 {
+  background-image: url('../images/bg-02.jpg');
+}
+
+.bg-3 {
+  background-image: url('../images/bg-03.jpg');
+}
+
+.bg-auth {
+  background-image: url('../images/bg.jpeg');
+}
+
+.bg-none {
+  background: none;
 }

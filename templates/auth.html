@@ -2,8 +2,9 @@
 {% load static %}
 
 
-{% block container %}
-	<div class="container-login100" style="background-image: url('{% static 'project8/images/bg.jpeg' %}');">
+{% block bg_img %}bg-auth{% endblock bg_img %}
+
+<div class="{% block container_class %}container-login100{% endblock container_class %} py-3">
         {% block content %}
         <div class="wrap-login100 p-l-55 p-r-55 p-t-30 p-b-30">
 			<form class="login100-form validate-form" method="post">
@@ -39,8 +40,7 @@
 			</form>
 		</div>
         {% endblock content %}
-	</div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>    
+    </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{% static 'project8/js/scripts.js' %}"></script>
-{% endblock container%}
 

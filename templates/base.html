@@ -15,17 +15,15 @@
     <body>
         <!-- Navigation-->
         {% include "partials/navigation.html" %}
-        {% block container %}
-            <div class="py-3 bg-fullscreen" style="background-image: url('{% static 'project8/images/bg-01.jpg' %}');">
-
+        <div class="bg {% block bg_img %} bg-1 {% endblock bg_img %}">
+        
             <!-- Container for full screen pages -->
-            <div class="container fullscreen-size">
+            <div class="{% block container_class %}container{% endblock container_class %} py-3">
                 {%  block content %}
-                <!-- Content goes here -->
+                    <!-- Content goes here -->
                 {%  endblock content %}
             </div>
-            </div>
-        {%  endblock container %}
+        </div>
         <!-- Footer-->
         {% include "partials/footer.html" %}
 

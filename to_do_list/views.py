@@ -5,11 +5,32 @@ from django.views.generic import CreateView
 from django.urls import reverse_lazy
 from .forms import SignUpForm, LogInForm
 from django.contrib.auth import login
+import datetime
+from .models import ToDoList
 
 
 # Create your views here.
 class HomeView(TemplateView):
     template_name = "home.html"
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return render(request, "home.html", self.get_context_data())
+        else:
+            return render(request, "welcome.html")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        user = self.request.user
+        today = datetime.date.today()
+
+        todo_list = ToDoList.objects.filter(user=user, date=today).first()
+
+        context["todo_list"] = todo_list
+        context["date"] = today
+
+        return context
 
 
 class LogInView(LoginView):
@@ -41,5 +62,7 @@ class SignUpView(CreateView):
 class HistoryMenuView(TemplateView):
     template_name = "history-menu.html"
 
+
 class AboutView(TemplateView):
     template_name = "about.html"
+

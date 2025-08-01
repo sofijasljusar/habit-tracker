@@ -66,3 +66,20 @@ class HistoryMenuView(TemplateView):
 class AboutView(TemplateView):
     template_name = "about.html"
 
+
+class BaseDetailView(TemplateView):
+    template_name = "detail-page.html"
+    include_template = None
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["include_template"] = self.include_template
+        return context
+
+
+class MonthDetailView(BaseDetailView):
+    include_template = "partials/month-detail.html"
+
+
+class DayDetailView(BaseDetailView):
+    include_template = "partials/day-detail.html"

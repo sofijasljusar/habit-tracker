@@ -13,7 +13,7 @@
             {% for form in formset %}
                 <div class="d-flex align-items-center mb-2 task-row">
                     <!-- Custom toggle image (clickable) -->
-                    <img src="{% static 'project8/images/uncheck.png' %}"
+                    <img src="{% static '' %}{% if form.instance.completed %}project8/images/check.png{% else %}project8/images/uncheck.png{% endif %}"
                         class="toggle-img me-2"
                         data-index="{{ forloop.counter0 }}"
                         style="cursor: pointer; width: 24px;" />

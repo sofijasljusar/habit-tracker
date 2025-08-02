@@ -10,71 +10,81 @@ from .models import ToDoList, ToDoItem
 from django.views import View
 
 
-# Create your views here.
 class HomeView(View):
     template_name = "home.html"
 
-    def get_todo_list(self):
+    def get_todo_list(self, date):
         if self.request.user.is_authenticated:
-            return ToDoList.objects.filter(user=self.request.user, date=self.today).first()
+            return ToDoList.objects.filter(user=self.request.user, date=date).first()
         return None
 
-    def render_form(self, formset):
-        context = {
-            "formset": formset,
-            "todo_list": self.get_todo_list(),
-            "date": self.today,
-        }
-        return render(self.request, self.template_name, context)
-
-    def get_queryset(self):
-        todo_list = self.get_todo_list()
-        if todo_list:
-            return todo_list.items.all()
-        else:
-            return ToDoItem.objects.none()
+    def get_formset_for_date(self, date, prefix, data=None):
+        todo_list = self.get_todo_list(date)
+        queryset = todo_list.items.all() if todo_list else ToDoItem.objects.none()
+        return ToDoItemFormSet(data=data, queryset=queryset, prefix=prefix)
 
     def dispatch(self, request, *args, **kwargs):
         self.today = datetime.date.today()
+        self.yesterday = self.today - datetime.timedelta(days=1)
+        self.tomorrow = self.today + datetime.timedelta(days=1)
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return render(request, "welcome.html")
 
-        queryset = self.get_queryset()
-        print("Number of items in queryset:", queryset.count())
-        formset = ToDoItemFormSet(queryset=queryset)
-        print("Number of forms in formset:", len(formset.forms))
-        return self.render_form(formset)
+        context = {
+            "date_yesterday": self.yesterday,
+            "date_today": self.today,
+            "date_tomorrow": self.tomorrow,
+            "formset_yesterday": self.get_formset_for_date(self.yesterday, prefix="yesterday"),
+            "formset_today": self.get_formset_for_date(self.today, prefix="today"),
+            "formset_tomorrow": self.get_formset_for_date(self.tomorrow, prefix="tomorrow"),
+        }
+        return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        todo_list = self.get_todo_list()
-        queryset = self.get_queryset()
-        formset = ToDoItemFormSet(request.POST, queryset=queryset)
+        if not request.user.is_authenticated:
+            return render(request, "welcome.html")
+
+        # Detect which formset is being submitted by checking the management form key
+        if 'yesterday-TOTAL_FORMS' in request.POST:
+            prefix = 'yesterday'
+            date = self.yesterday
+        elif 'today-TOTAL_FORMS' in request.POST:
+            prefix = 'today'
+            date = self.today
+        elif 'tomorrow-TOTAL_FORMS' in request.POST:
+            prefix = 'tomorrow'
+            date = self.tomorrow
+        else:
+            # No formset submitted or invalid submission - reload
+            return redirect('home')
+
+        formset = self.get_formset_for_date(date, prefix=prefix, data=request.POST)
 
         if formset.is_valid():
-            for f in formset.forms:
-                print("Form cleaned_data:", f.cleaned_data)
-            # filter input for all forms in formset (exclude invalid and deleted)
-            new_items = [f for f in formset.forms if f.cleaned_data and not f.cleaned_data.get('DELETE', False)]
-            print(f"Forms to save (excluding deleted): {len(new_items)}")
-            if new_items and not todo_list:
-                todo_list = ToDoList.objects.create(user=self.request.user, date=self.today)
-
+            todo_list = self.get_todo_list(date)
+            if not todo_list:
+                todo_list = ToDoList.objects.create(user=request.user, date=date)
             instances = formset.save(commit=False)
             for instance in instances:
                 instance.to_do_list = todo_list
                 instance.save()
-                print(instance, "saved")
             for obj in formset.deleted_objects:
                 obj.delete()
-            return redirect("home")
-        print("Formset not valid")
-        print(formset.errors)
-        return self.render_form(formset)  # not redirect so that errors are saved in formset
+            return redirect('home')
 
-
+        # If invalid, reload formsets but replace submitted one with errors
+        context = {
+            "date_yesterday": self.yesterday,
+            "date_today": self.today,
+            "date_tomorrow": self.tomorrow,
+            "formset_yesterday": self.get_formset_for_date(self.yesterday, prefix="yesterday") if prefix != "yesterday" else formset,
+            "formset_today": self.get_formset_for_date(self.today, prefix="today") if prefix != "today" else formset,
+            "formset_tomorrow": self.get_formset_for_date(self.tomorrow, prefix="tomorrow") if prefix != "tomorrow" else formset,
+        }
+        return render(request, self.template_name, context)
 class LogInView(LoginView):
     template_name = "auth.html"
     authentication_form = LogInForm

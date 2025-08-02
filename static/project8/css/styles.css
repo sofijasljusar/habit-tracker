@@ -482,3 +482,9 @@ body, html {
 .title-input:focus {
   border-bottom: 1px solid #27DDF5 !important;
 }
+
+.todo-list-items {
+  width: 70%;
+  margin: 0 auto;
+  text-align: center;
+}

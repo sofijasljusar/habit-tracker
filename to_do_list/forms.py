@@ -25,7 +25,7 @@ class ToDoItemForm(forms.ModelForm):
         model = ToDoItem
         fields = ["title", "completed"]
         widgets = {
-            "title": forms.TextInput(attrs={"class": "form-control"}),
+            "title": forms.TextInput(attrs={"class": "title-input"}),
             "completed": forms.CheckboxInput(attrs={"class": "d-done"}),
         }
 

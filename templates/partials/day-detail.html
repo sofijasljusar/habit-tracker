@@ -4,19 +4,19 @@
     <h3 class="text-center mt-5  text-shadow">To Do List</h3>
     <h5 class="text-center text-decoration-underline">for {{ date|date:"d-m-Y" }}</h5>
 
-        <div class="ms-3 mt-3">
+        <div class="mx-3 mt-3">
         <form method="post">
         {% csrf_token %}
         {{ formset.management_form }}
 
         <div class="task-list">
             {% for form in formset %}
-                <div class="d-flex align-items-center mb-2 task-row">
+                <div class="d-flex align-items-center mb-3 task-row">
                     <!-- Custom toggle image (clickable) -->
                     <img src="{% static '' %}{% if form.instance.completed %}project8/images/check.png{% else %}project8/images/uncheck.png{% endif %}"
                         class="toggle-img me-2"
                         data-index="{{ forloop.counter0 }}"
-                        style="cursor: pointer; width: 24px;" />
+                        style="cursor: pointer; width: 34px;" />
                     {{ form.id }}
                     <!-- Hidden input to track completed status (true/false) -->
                     <input type="hidden" name="form-{{ forloop.counter0 }}-completed"
@@ -28,8 +28,10 @@
             </div>
         {% endfor %}
     </div>
+    <div class="text-center">
+        <button type="submit" class="btn btn btn-outline-dark mt-3">Save</button>
+    </div>
 
-    <button type="submit" class="btn btn-primary mt-3">Save</button>
 </form>
         </div>
 

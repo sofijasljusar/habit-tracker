@@ -8,6 +8,7 @@ from django.contrib.auth import login
 import datetime
 from .models import ToDoList, ToDoItem
 from django.views import View
+from django.utils import timezone
 
 
 class HomeView(View):
@@ -24,7 +25,7 @@ class HomeView(View):
         return ToDoItemFormSet(data=data, queryset=queryset, prefix=prefix)
 
     def dispatch(self, request, *args, **kwargs):
-        self.today = datetime.date.today()
+        self.today = timezone.localtime(timezone.now()).date()
         self.yesterday = self.today - datetime.timedelta(days=1)
         self.tomorrow = self.today + datetime.timedelta(days=1)
         return super().dispatch(request, *args, **kwargs)
@@ -85,6 +86,8 @@ class HomeView(View):
             "formset_tomorrow": self.get_formset_for_date(self.tomorrow, prefix="tomorrow") if prefix != "tomorrow" else formset,
         }
         return render(request, self.template_name, context)
+
+
 class LogInView(LoginView):
     template_name = "auth.html"
     authentication_form = LogInForm

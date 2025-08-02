@@ -1,17 +1,55 @@
 {% load static %}
-{#<img src="{% static 'project8/images/Day Mock.png' %}" #}
-{#     alt="demo" #}
-{#     style="width: 100%; height: 100%; object-fit: cover;"> #}
+
 <div class="bg-white bg-card w-100 h-100">
-    {% if todo_list %}
-    <h3>To-do list for {{ date }}</h3>
-    <ul>
-        {% for item in todo_list.items.all %}
-            <li>{% if item.completed %}✅{% else %}❌{% endif %} {{ item.title }}</li>
+    <h3 class="text-center mt-5  text-shadow">To Do List</h3>
+    <h5 class="text-center text-decoration-underline">for {{ date|date:"d-m-Y" }}</h5>
+
+        <div class="ms-3 mt-3">
+        <form method="post">
+        {% csrf_token %}
+        {{ formset.management_form }}
+
+        <div class="task-list">
+            {% for form in formset %}
+                <div class="d-flex align-items-center mb-2 task-row">
+                    <!-- Custom toggle image (clickable) -->
+                    <img src="{% static 'project8/images/uncheck.png' %}"
+                        class="toggle-img me-2"
+                        data-index="{{ forloop.counter0 }}"
+                        style="cursor: pointer; width: 24px;" />
+                    {{ form.id }}
+                    <!-- Hidden input to track completed status (true/false) -->
+                    <input type="hidden" name="form-{{ forloop.counter0 }}-completed"
+                           id="completed-{{ forloop.counter0 }}"
+                           value="{{ form.instance.completed|yesno:'true,false' }}">
+
+                    {{ form.title }}
+
+            </div>
         {% endfor %}
-    </ul>
-{% else %}
-    <p> No to-do list for {{ date }} yet.</p>
-{% endif %}
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Save</button>
+</form>
+        </div>
+
 </div>
+
+<script>
+    document.querySelectorAll('.toggle-img').forEach((img, index) => {
+        img.addEventListener('click', function () {
+            const hiddenInput = document.getElementById(`completed-${index}`);
+            const isCompleted = hiddenInput.value === "true";
+
+            // Toggle value
+            const newState = !isCompleted;
+            hiddenInput.value = newState ? "true" : "false";
+
+            // Update image
+            img.src = newState
+                ? "{% static 'project8/images/check.png' %}"
+                : "{% static 'project8/images/uncheck.png' %}";
+        });
+    });
+</script>
 

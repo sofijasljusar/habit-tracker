@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
+from .models import ToDoItem
 
 
 class SignUpForm(UserCreationForm):
@@ -17,3 +18,21 @@ class SignUpForm(UserCreationForm):
 class LogInForm(AuthenticationForm):
     username = forms.CharField(widget=forms.TextInput(attrs={"class": "input100", "placeholder": "Username or Email"}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={"class": "input100", "placeholder": "Password"}))
+
+
+class ToDoItemForm(forms.ModelForm):
+    class Meta:
+        model = ToDoItem
+        fields = ["title", "completed"]
+        widgets = {
+            "title": forms.TextInput(attrs={"class": "form-control"}),
+            "completed": forms.CheckboxInput(attrs={"class": "d-done"}),
+        }
+
+
+ToDoItemFormSet = forms.modelformset_factory(
+    ToDoItem,
+    form=ToDoItemForm,
+    extra=1,
+    can_delete=True
+)

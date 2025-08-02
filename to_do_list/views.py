@@ -3,34 +3,76 @@ from django.views.generic import TemplateView
 from django.contrib.auth.views import LoginView
 from django.views.generic import CreateView
 from django.urls import reverse_lazy
-from .forms import SignUpForm, LogInForm
+from .forms import SignUpForm, LogInForm, ToDoItemFormSet
 from django.contrib.auth import login
 import datetime
-from .models import ToDoList
+from .models import ToDoList, ToDoItem
+from django.views import View
 
 
 # Create your views here.
-class HomeView(TemplateView):
+class HomeView(View):
     template_name = "home.html"
 
-    def get(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return render(request, "home.html", self.get_context_data())
+    def get_todo_list(self):
+        if self.request.user.is_authenticated:
+            return ToDoList.objects.filter(user=self.request.user, date=self.today).first()
+        return None
+
+    def render_form(self, formset):
+        context = {
+            "formset": formset,
+            "todo_list": self.get_todo_list(),
+            "date": self.today,
+        }
+        return render(self.request, self.template_name, context)
+
+    def get_queryset(self):
+        todo_list = self.get_todo_list()
+        if todo_list:
+            return todo_list.items.all()
         else:
+            return ToDoItem.objects.none()
+
+    def dispatch(self, request, *args, **kwargs):
+        self.today = datetime.date.today()
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
             return render(request, "welcome.html")
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        queryset = self.get_queryset()
+        print("Number of items in queryset:", queryset.count())
+        formset = ToDoItemFormSet(queryset=queryset)
+        print("Number of forms in formset:", len(formset.forms))
+        return self.render_form(formset)
 
-        user = self.request.user
-        today = datetime.date.today()
+    def post(self, request, *args, **kwargs):
+        todo_list = self.get_todo_list()
+        queryset = self.get_queryset()
+        formset = ToDoItemFormSet(request.POST, queryset=queryset)
 
-        todo_list = ToDoList.objects.filter(user=user, date=today).first()
+        if formset.is_valid():
+            for f in formset.forms:
+                print("Form cleaned_data:", f.cleaned_data)
+            # filter input for all forms in formset (exclude invalid and deleted)
+            new_items = [f for f in formset.forms if f.cleaned_data and not f.cleaned_data.get('DELETE', False)]
+            print(f"Forms to save (excluding deleted): {len(new_items)}")
+            if new_items and not todo_list:
+                todo_list = ToDoList.objects.create(user=self.request.user, date=self.today)
 
-        context["todo_list"] = todo_list
-        context["date"] = today
-
-        return context
+            instances = formset.save(commit=False)
+            for instance in instances:
+                instance.to_do_list = todo_list
+                instance.save()
+                print(instance, "saved")
+            for obj in formset.deleted_objects:
+                obj.delete()
+            return redirect("home")
+        print("Formset not valid")
+        print(formset.errors)
+        return self.render_form(formset)  # not redirect so that errors are saved in formset
 
 
 class LogInView(LoginView):

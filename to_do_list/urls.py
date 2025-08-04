@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import HomeView, SignUpView, LogInView, HistoryMenuView, AboutView, DayDetailView, MonthDetailView
+from .views import HomeView, SignUpView, LogInView, HistoryMenuView, AboutView, DayDetailView, MonthDetailView, HabitCreateView
 from django.contrib.auth.views import LogoutView
 
 
@@ -13,5 +13,6 @@ urlpatterns = [
 
     path('day-detail/', DayDetailView.as_view(), name='day-detail'),
     path('month-detail/', MonthDetailView.as_view(), name='month-detail'),
+    path('add-habit/', HabitCreateView.as_view(), name='add-habit'),
 
 ]

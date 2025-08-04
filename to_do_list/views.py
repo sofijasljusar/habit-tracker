@@ -13,6 +13,7 @@ from calendar import monthrange
 from django.db.models import Prefetch
 import calendar
 
+
 class HomeView(View):
     template_name = "home.html"
 
@@ -161,3 +162,11 @@ class MonthDetailView(BaseDetailView):
 
 class DayDetailView(BaseDetailView):
     include_template = "partials/day-detail.html"
+
+
+class HabitCreateView(View):
+    def post(self, request, *args, **kwargs):
+        name = request.POST.get("name")
+        if name:
+            Habit.objects.create(user=request.user, name=name)
+        return redirect("home")

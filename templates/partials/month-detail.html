@@ -1,3 +1,36 @@
 {% load static %}
-<div class="bg-white bg-card w-100 h-100">
+<div class="bg-white bg-card w-100 h-100 text-center py-5">
+  <h3 class="text-shadow">{{ month_start|date:"F" }} {{ month_start|date:"Y" }}</h3>
+
+  <div class="row g-3">
+    {% for i in "1234" %}
+      <div class="col-12 col-md-6">
+        <div class="bg-white rounded p-3 h-100 ">
+
+          <!-- Calendar Header -->
+          <div class="row text-center fw-bold mb-2">
+            <h5>Habit {{ i }}</h5>
+            {% for weekday in weekdays %}
+              <div class="col px-0">{{ weekday }}</div>
+            {% endfor %}
+          </div>
+
+          <!-- Calendar Days -->
+          {% for week in month_calendar %}
+            <div class="row text-center">
+              {% for day in week %}
+                <div class="col px-0" style="width: 40px; height: 40px; opacity: 50%; margin: 3px" >
+                  {% if day != 0 %}
+                    <div class="bg-info text-white rounded d-flex justify-content-center align-items-center h-100 w-100">
+                      {{ day }}
+                    </div>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
 </div>

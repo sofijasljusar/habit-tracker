@@ -6,10 +6,12 @@ from django.urls import reverse_lazy
 from .forms import SignUpForm, LogInForm, ToDoItemFormSet
 from django.contrib.auth import login
 import datetime
-from .models import ToDoList, ToDoItem
+from .models import ToDoList, ToDoItem, Habit, HabitRecord
 from django.views import View
 from django.utils import timezone
-
+from calendar import monthrange
+from django.db.models import Prefetch
+import calendar
 
 class HomeView(View):
     template_name = "home.html"
@@ -34,6 +36,22 @@ class HomeView(View):
         if not request.user.is_authenticated:
             return render(request, "welcome.html")
 
+        first_day = self.today.replace(day=1)
+        last_day = self.today.replace(day=monthrange(self.today.year, self.today.month)[1])
+        habits = Habit.objects.filter(user=request.user).prefetch_related(
+            Prefetch(
+                'records',
+                queryset=HabitRecord.objects.filter(date__gte=first_day, date__lte=last_day)
+            )
+        )
+        month_calendar = []
+
+        # Returns a matrix: each inner list represents a week (Mon = 0)
+        cal = calendar.Calendar(firstweekday=0)  # 0 = Monday; change to 6 if you want Sunday start
+
+        for week in cal.monthdayscalendar(self.today.year, self.today.month):
+            month_calendar.append(week)  # week = [0 if no day, else day number]
+
         context = {
             "date_yesterday": self.yesterday,
             "date_today": self.today,
@@ -41,6 +59,11 @@ class HomeView(View):
             "formset_yesterday": self.get_formset_for_date(self.yesterday, prefix="yesterday"),
             "formset_today": self.get_formset_for_date(self.today, prefix="today"),
             "formset_tomorrow": self.get_formset_for_date(self.tomorrow, prefix="tomorrow"),
+            "habits": habits,
+            "month_start": first_day,
+            "month_end": last_day,
+            "month_calendar": month_calendar,
+            "weekdays": ["M", "T", "W", "T", "S", "S"],
         }
         return render(request, self.template_name, context)
 

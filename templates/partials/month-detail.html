@@ -1,4 +1,6 @@
 {% load static %}
+{% load habit_tags %}
+
 <div class="bg-white bg-card w-100 h-100 text-center py-5">
   <h3 class="text-shadow">{{ month_start|date:"F" }} {{ month_start|date:"Y" }}</h3>
   <button class="btn border-dark" data-bs-toggle="modal" data-bs-target="#addHabitModal">Create a New Habit :D</button>
@@ -18,12 +20,19 @@
           <!-- Calendar Days -->
           {% for week in month_calendar %}
             <div class="row text-center">
-              {% for day in week %}
+              {% for current_date in week %}
                 <div class="col px-0" style="width: 40px; height: 40px; opacity: 50%; margin: 3px" >
-                  {% if day != 0 %}
-                    <div class="bg-info text-white rounded d-flex justify-content-center align-items-center h-100 w-100">
-                      {{ day }}
-                    </div>
+                  {% if current_date %}
+                    {% with day_record=habit.records|get_date:current_date %}
+                      <div
+                        class="rounded d-flex justify-content-center align-items-center h-100 w-100 habit-cell {% if day_record %}bg-info text-white{% else %}bg-light{% endif %}"
+                        data-habit="{{ habit.id }}"
+                        data-date="{{ current_date|date:'Y-m-d' }}"
+                        style="cursor: pointer;"
+                      >
+                        {{ current_date.day }}
+                      </div>
+                    {% endwith %}
                   {% endif %}
                 </div>
               {% endfor %}
@@ -36,3 +45,31 @@
 </div>
 
 {% include 'partials/habit-modal.html' %}
+
+<script>
+  document.querySelectorAll('.habit-cell').forEach(cell => {
+    cell.addEventListener('click', async () => {
+      const habitId = cell.dataset.habit;
+      const dateStr = cell.dataset.date; // YYYY-MM-DD string
+      const [year, month, day] = dateStr.split('-');
+
+      const response = await fetch(`/toggle-habit/${habitId}/${year}/${month}/${day}/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}',
+        },
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        if (result.status === 'created') {
+          cell.classList.remove('bg-light');
+          cell.classList.add('bg-info', 'text-white');
+        } else if (result.status === 'deleted') {
+          cell.classList.remove('bg-info', 'text-white');
+          cell.classList.add('bg-light');
+        }
+      }
+    });
+  });
+</script>

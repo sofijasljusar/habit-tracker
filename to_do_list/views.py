@@ -12,6 +12,8 @@ from django.utils import timezone
 from calendar import monthrange
 from django.db.models import Prefetch
 import calendar
+from django.http import JsonResponse
+from datetime import date
 
 
 class HomeView(View):
@@ -51,8 +53,11 @@ class HomeView(View):
         cal = calendar.Calendar(firstweekday=0)  # 0 = Monday; change to 6 if you want Sunday start
 
         for week in cal.monthdayscalendar(self.today.year, self.today.month):
-            month_calendar.append(week)  # week = [0 if no day, else day number]
-
+            week_dates = [
+                date(self.today.year, self.today.month, day) if day != 0 else None
+                for day in week
+            ]
+            month_calendar.append(week_dates)
         context = {
             "date_yesterday": self.yesterday,
             "date_today": self.today,
@@ -64,7 +69,7 @@ class HomeView(View):
             "month_start": first_day,
             "month_end": last_day,
             "month_calendar": month_calendar,
-            "weekdays": ["M", "T", "W", "T", "S", "S"],
+            "weekdays": ["M", "T", "W", "T", "F", "S", "S"],
         }
         return render(request, self.template_name, context)
 
@@ -170,3 +175,19 @@ class HabitCreateView(View):
         if name:
             Habit.objects.create(user=request.user, name=name)
         return redirect("home")
+
+
+class HabitRecordToggleView(View):
+    def post(self, request, habit_id, year, month, day):
+        try:
+            habit = Habit.objects.get(id=habit_id, user=request.user)
+        except Habit.DoesNotExist:
+            return JsonResponse({"error": "Habit not found"}, status=404)
+
+        habit_date = date(year, month, day)
+        record, created = HabitRecord.objects.get_or_create(habit=habit, date=habit_date)
+
+        if not created:
+            record.delete()
+            return JsonResponse({"status": "deleted"})
+        return JsonResponse({"status": "created"})

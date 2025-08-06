@@ -1,0 +1,35 @@
+{% load static %}
+
+<div class="carousel-item {% if date == date_today %}active{% endif %}">
+    <h3 class="text-shadow">To Do List</h3>
+    <h5 class="text-decoration-underline">for {{ date|date:"d-m-Y" }}</h5>
+    
+    <div class="mt-3 todo-list-items">
+      <form method="post" action="{% url 'home' %}">
+        {% csrf_token %}
+        {{ formset.management_form }}
+    
+        <div class="task-list">
+          {% for form in formset %}
+            <div class="d-flex align-items-center justify-content-center mb-3 task-row">
+              <img src="{% static '' %}{% if form.instance.completed %}project8/images/check.png{% else %}project8/images/uncheck.png{% endif %}"
+                class="toggle-img me-2" 
+                   data-index="{{ forloop.counter0 }}" 
+                   data-prefix="{{ form.prefix }}"
+                   style="cursor: pointer; width: 34px;"  
+                   alt="toggle"/>
+              {{ form.id }}
+              <input type="hidden" 
+                     name="{{ form.prefix }}-completed" 
+                     id="completed-{{ form.prefix }}-{{ forloop.counter0 }}" 
+                     value="{{ form.instance.completed|yesno:'true,false' }}">
+              {{ form.title }}
+            </div>
+          {% endfor %}
+        </div>
+        <div class="text-center">
+          <button type="submit" class="btn btn-outline-dark mt-3">Save</button>
+        </div>
+      </form>
+    </div>
+</div>

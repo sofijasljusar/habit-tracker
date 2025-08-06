@@ -58,13 +58,18 @@ class HomeView(View):
                 for day in week
             ]
             month_calendar.append(week_dates)
+
+        formsets = {
+            self.yesterday: self.get_formset_for_date(self.yesterday, prefix="yesterday"),
+            self.today: self.get_formset_for_date(self.today, prefix="today"),
+            self.tomorrow: self.get_formset_for_date(self.tomorrow, prefix="tomorrow")
+        }
+
         context = {
             "date_yesterday": self.yesterday,
             "date_today": self.today,
             "date_tomorrow": self.tomorrow,
-            "formset_yesterday": self.get_formset_for_date(self.yesterday, prefix="yesterday"),
-            "formset_today": self.get_formset_for_date(self.today, prefix="today"),
-            "formset_tomorrow": self.get_formset_for_date(self.tomorrow, prefix="tomorrow"),
+            "formsets": formsets,
             "habits": habits,
             "month_start": first_day,
             "month_end": last_day,

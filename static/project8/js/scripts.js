@@ -1,3 +1,5 @@
+// script for the copied auth page
+
 $(document).ready(function() {
 
 (function ($) {

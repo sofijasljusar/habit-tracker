@@ -3,93 +3,10 @@
   <div id="carouselExampleControls" class="carousel slide h-100" data-bs-ride="false" data-bs-wrap="false">
 
     <div class="carousel-inner text-center">
-
-      <!-- Yesterday -->
-      <div class="carousel-item">
-        <h3 class="text-shadow">To Do List</h3>
-        <h5 class="text-decoration-underline">for {{ date_yesterday|date:"d-m-Y" }}</h5>
-
-        <div class="mt-3 todo-list-items">
-          <form method="post" action="{% url 'home' %}">
-            {% csrf_token %}
-            {{ formset_yesterday.management_form }}
-
-            <div class="task-list">
-              {% for form in formset_yesterday %}
-                <div class="d-flex align-items-center justify-content-center mb-3 task-row">
-                  <img src="{% static '' %}{% if form.instance.completed %}project8/images/check.png{% else %}project8/images/uncheck.png{% endif %}"
-                    class="toggle-img me-2" data-index="{{ forloop.counter0 }}" style="cursor: pointer; width: 34px;" />
-                  {{ form.id }}
-                  <input type="hidden" name="{{ form.prefix }}-completed" id="completed-{{ forloop.counter0 }}"
-                    value="{{ form.instance.completed|yesno:'true,false' }}">
-                  {{ form.title }}
-                </div>
-              {% endfor %}
-            </div>
-            <div class="text-center">
-              <button type="submit" class="btn btn-outline-dark mt-3">Save</button>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <!-- Today -->
-      <div class="carousel-item active">
-        <h3 class="text-shadow">To Do List</h3>
-        <h5 class="text-decoration-underline">for {{ date_today|date:"d-m-Y" }}</h5>
-
-        <div class="mt-3 todo-list-items">
-          <form method="post" action="{% url 'home' %}">
-            {% csrf_token %}
-            {{ formset_today.management_form }}
-
-            <div class="task-list">
-              {% for form in formset_today %}
-                <div class="d-flex align-items-center mb-3 task-row">
-                  <img src="{% static '' %}{% if form.instance.completed %}project8/images/check.png{% else %}project8/images/uncheck.png{% endif %}"
-                    class="toggle-img me-2" data-index="{{ forloop.counter0 }}" style="cursor: pointer; width: 34px;" />
-                  {{ form.id }}
-                  <input type="hidden" name="{{ form.prefix }}-completed" id="completed-{{ forloop.counter0 }}"
-                    value="{{ form.instance.completed|yesno:'true,false' }}">
-                  {{ form.title }}
-                </div>
-              {% endfor %}
-            </div>
-            <div class="text-center">
-              <button type="submit" class="btn btn-outline-dark mt-3">Save</button>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <!-- Tomorrow -->
-      <div class="carousel-item">
-        <h3 class="text-shadow">To Do List</h3>
-        <h5 class="text-decoration-underline">for {{ date_tomorrow|date:"d-m-Y" }}</h5>
-
-        <div class="mt-3 todo-list-items">
-          <form method="post" action="{% url 'home' %}">
-            {% csrf_token %}
-            {{ formset_tomorrow.management_form }}
-
-            <div class="task-list">
-              {% for form in formset_tomorrow %}
-                <div class="d-flex align-items-center mb-3 task-row">
-                  <img src="{% static '' %}{% if form.instance.completed %}project8/images/check.png{% else %}project8/images/uncheck.png{% endif %}"
-                    class="toggle-img me-2" data-index="{{ forloop.counter0 }}" style="cursor: pointer; width: 34px;" />
-                  {{ form.id }}
-                  <input type="hidden" name="{{ form.prefix }}-completed" id="completed-{{ forloop.counter0 }}"
-                    value="{{ form.instance.completed|yesno:'true,false' }}">
-                  {{ form.title }}
-                </div>
-              {% endfor %}
-            </div>
-            <div class="text-center">
-              <button type="submit" class="btn btn-outline-dark mt-3">Save</button>
-            </div>
-          </form>
-        </div>
-      </div>
+        
+      {% for date, formset in formsets.items %}
+        {% include "partials/day-slide.html" with date=date formset=formset %}
+      {% endfor %}
 
     </div>
 
@@ -108,9 +25,12 @@
 </div>
 
 <script>
-  document.querySelectorAll('.toggle-img').forEach((img, index) => {
+  document.querySelectorAll('.toggle-img').forEach((img) => {
+    const index = img.dataset.index;
+    const prefix = img.dataset.prefix;
+    
     img.addEventListener('click', function () {
-      const hiddenInput = document.getElementById(`completed-${index}`);
+      const hiddenInput = document.getElementById(`completed-${prefix}-${index}`);
       const isCompleted = hiddenInput.value === "true";
 
       const newState = !isCompleted;

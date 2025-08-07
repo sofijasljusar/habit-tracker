@@ -1,0 +1,36 @@
+{% load habit_tags %}
+
+<div class="col-12 col-md-6">
+    <div class="bg-white rounded p-3 h-100 ">
+    
+      <!-- Calendar Header -->
+      <div class="row text-center fw-bold mb-2">
+        <h5>{{ habit.name }}</h5>
+        {% for weekday in weekdays %}
+          <div class="col px-0">{{ weekday }}</div>
+        {% endfor %}
+      </div>
+    
+      <!-- Calendar Days -->
+      {% for week in month_calendar %}
+        <div class="row text-center">
+          {% for current_date in week %}
+            <div class="col px-0" style="width: 40px; height: 40px; opacity: 50%; margin: 3px" >
+              {% if current_date %}
+                {% with day_record=habit.records|get_date:current_date %}
+                  <div
+                    class="rounded d-flex justify-content-center align-items-center h-100 w-100 habit-cell {% if day_record %}bg-info text-white{% else %}bg-light{% endif %}"
+                    data-habit="{{ habit.id }}"
+                    data-date="{{ current_date|date:'Y-m-d' }}"
+                    style="cursor: pointer;"
+                  >
+                    {{ current_date.day }}
+                  </div>
+                {% endwith %}
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+</div>

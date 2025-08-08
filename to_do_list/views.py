@@ -19,6 +19,12 @@ from datetime import date
 class HomeView(View):
     template_name = "home.html"
 
+    def dispatch(self, request, *args, **kwargs):
+        self.today = timezone.localtime(timezone.now()).date()
+        self.yesterday = self.today - datetime.timedelta(days=1)
+        self.tomorrow = self.today + datetime.timedelta(days=1)
+        return super().dispatch(request, *args, **kwargs)
+
     def get_todo_list(self, date):
         if self.request.user.is_authenticated:
             return ToDoList.objects.filter(user=self.request.user, date=date).first()
@@ -29,79 +35,81 @@ class HomeView(View):
         queryset = todo_list.items.all() if todo_list else ToDoItem.objects.none()
         return ToDoItemFormSet(data=data, queryset=queryset, prefix=prefix)
 
-    def dispatch(self, request, *args, **kwargs):
-        self.today = timezone.localtime(timezone.now()).date()
-        self.yesterday = self.today - datetime.timedelta(days=1)
-        self.tomorrow = self.today + datetime.timedelta(days=1)
-        return super().dispatch(request, *args, **kwargs)
+    def get_month_calendar(self):
+        cal = calendar.Calendar(firstweekday=0) # Returns a matrix: each inner list represents a week (Mon = 0)
+        print(cal)
+        return [
+            [date(self.today.year, self.today.month, day) if day else None for day in week]
+            for week in cal.monthdayscalendar(self.today.year, self.today.month)]
 
-    def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return render(request, "welcome.html")
-
+    def get_habits(self):
         first_day = self.today.replace(day=1)
         last_day = self.today.replace(day=monthrange(self.today.year, self.today.month)[1])
-        habits = Habit.objects.filter(user=request.user).prefetch_related(
+        habits = Habit.objects.filter(user=self.request.user).prefetch_related(
             Prefetch(
                 'records',
                 queryset=HabitRecord.objects.filter(date__gte=first_day, date__lte=last_day)
             )
         )
-        month_calendar = []
+        return habits, first_day, last_day
 
-        # Returns a matrix: each inner list represents a week (Mon = 0)
-        cal = calendar.Calendar(firstweekday=0)  # 0 = Monday; change to 6 if you want Sunday start
-
-        for week in cal.monthdayscalendar(self.today.year, self.today.month):
-            week_dates = [
-                date(self.today.year, self.today.month, day) if day != 0 else None
-                for day in week
-            ]
-            month_calendar.append(week_dates)
-
+    def get_context_data(self, submitted_formset=None, prefix=None):
         formsets = {
-            self.yesterday: self.get_formset_for_date(self.yesterday, prefix="yesterday"),
-            self.today: self.get_formset_for_date(self.today, prefix="today"),
-            self.tomorrow: self.get_formset_for_date(self.tomorrow, prefix="tomorrow")
+            "yesterday": self.get_formset_for_date(self.yesterday, prefix="yesterday"),
+            "today": self.get_formset_for_date(self.today, prefix="today"),
+            "tomorrow": self.get_formset_for_date(self.tomorrow, prefix="tomorrow")
         }
 
-        context = {
+        # If these arguments are set - how formset containing errors
+        if submitted_formset and prefix:
+            formsets[prefix] = submitted_formset
+
+        habits, month_start, month_end = self.get_habits()
+
+        return {
             "date_yesterday": self.yesterday,
             "date_today": self.today,
             "date_tomorrow": self.tomorrow,
-            "formsets": formsets,
+            "formsets": {
+                self.yesterday: formsets["yesterday"],
+                self.today: formsets["today"],
+                self.tomorrow: formsets["tomorrow"],
+            },
             "habits": habits,
-            "month_start": first_day,
-            "month_end": last_day,
-            "month_calendar": month_calendar,
+            "month_start": month_start,
+            "month_end": month_end,
+            "month_calendar": self.get_month_calendar(),
             "weekdays": ["M", "T", "W", "T", "F", "S", "S"],
         }
-        return render(request, self.template_name, context)
+
+    def get_form_prefix_and_date(self, post_data):
+        for prefix, date_obj in {
+            "yesterday": self.yesterday,
+            "today": self.today,
+            "tomorrow": self.tomorrow,
+        }.items():
+            if f"{prefix}-TOTAL_FORMS" in post_data:
+                return prefix, date_obj
+        return None, None
+
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return render(request, "welcome.html")
+        return render(request, self.template_name, self.get_context_data())
 
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return render(request, "welcome.html")
 
         # Detect which formset is being submitted by checking the management form key
-        if 'yesterday-TOTAL_FORMS' in request.POST:
-            prefix = 'yesterday'
-            date = self.yesterday
-        elif 'today-TOTAL_FORMS' in request.POST:
-            prefix = 'today'
-            date = self.today
-        elif 'tomorrow-TOTAL_FORMS' in request.POST:
-            prefix = 'tomorrow'
-            date = self.tomorrow
-        else:
-            # No formset submitted or invalid submission - reload
+        prefix, date_obj = self.get_form_prefix_and_date(request.POST)
+        if not prefix:
             return redirect('home')
 
-        formset = self.get_formset_for_date(date, prefix=prefix, data=request.POST)
+        formset = self.get_formset_for_date(date_obj, prefix=prefix, data=request.POST)
 
         if formset.is_valid():
-            todo_list = self.get_todo_list(date)
-            if not todo_list:
-                todo_list = ToDoList.objects.create(user=request.user, date=date)
+            todo_list = self.get_todo_list(date_obj) or ToDoList.objects.create(user=request.user, date=date)
             instances = formset.save(commit=False)
             for instance in instances:
                 instance.to_do_list = todo_list
@@ -111,15 +119,7 @@ class HomeView(View):
             return redirect('home')
 
         # If invalid, reload formsets but replace submitted one with errors
-        context = {
-            "date_yesterday": self.yesterday,
-            "date_today": self.today,
-            "date_tomorrow": self.tomorrow,
-            "formset_yesterday": self.get_formset_for_date(self.yesterday, prefix="yesterday") if prefix != "yesterday" else formset,
-            "formset_today": self.get_formset_for_date(self.today, prefix="today") if prefix != "today" else formset,
-            "formset_tomorrow": self.get_formset_for_date(self.tomorrow, prefix="tomorrow") if prefix != "tomorrow" else formset,
-        }
-        return render(request, self.template_name, context)
+        return render(request, self.template_name, self.get_context_data(submitted_formset=formset, prefix=prefix))
 
 
 class LogInView(LoginView):

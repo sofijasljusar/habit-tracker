@@ -109,7 +109,7 @@ class HomeView(View):
         formset = self.get_formset_for_date(date_obj, prefix=prefix, data=request.POST)
 
         if formset.is_valid():
-            todo_list = self.get_todo_list(date_obj) or ToDoList.objects.create(user=request.user, date=date)
+            todo_list = self.get_todo_list(date_obj) or ToDoList.objects.create(user=request.user, date=date_obj)
             instances = formset.save(commit=False)
             for instance in instances:
                 instance.to_do_list = todo_list

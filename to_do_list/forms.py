@@ -16,7 +16,7 @@ class SignUpForm(UserCreationForm):
 
 
 class LogInForm(AuthenticationForm):
-    username = forms.CharField(widget=forms.TextInput(attrs={"class": "input100", "placeholder": "Username or Email"}))
+    username = forms.CharField(widget=forms.TextInput(attrs={"class": "input100", "placeholder": "Username"}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={"class": "input100", "placeholder": "Password"}))
 
 

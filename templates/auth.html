@@ -12,7 +12,13 @@
                 <span class="login100-form-title p-b-37">
 					{{ title }}
 				</span>
-                
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger small mb-3">
+                        {% for error in form.non_field_errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
                 {% for field in form %}
                     <div class="wrap-input100 validate-input m-b-20 transparent" data-validate="{{ field.label }}">
                         {{ field }}

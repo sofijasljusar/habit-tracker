@@ -14,6 +14,7 @@ from django.db.models import Prefetch
 import calendar
 from django.http import JsonResponse
 from datetime import date
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class HomeView(View):
@@ -148,7 +149,7 @@ class SignUpView(CreateView):
         return context
 
 
-class HistoryMenuView(TemplateView):
+class HistoryMenuView(LoginRequiredMixin, TemplateView):
     template_name = "history-menu.html"
 
 
@@ -156,7 +157,7 @@ class AboutView(TemplateView):
     template_name = "about.html"
 
 
-class BaseDetailView(TemplateView):
+class BaseDetailView(LoginRequiredMixin, TemplateView):
     template_name = "detail-page.html"
     include_template = None
 
@@ -174,7 +175,7 @@ class DayDetailView(BaseDetailView):
     include_template = "partials/day-detail.html"
 
 
-class HabitCreateView(View):
+class HabitCreateView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         name = request.POST.get("name")
         if name:
@@ -182,7 +183,7 @@ class HabitCreateView(View):
         return redirect("home")
 
 
-class HabitRecordToggleView(View):
+class HabitRecordToggleView(LoginRequiredMixin, View):
     def post(self, request, habit_id, year, month, day):
         try:
             habit = Habit.objects.get(id=habit_id, user=request.user)

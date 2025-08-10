@@ -9,7 +9,7 @@
         {% csrf_token %}
         {{ formset.management_form }}
     
-        <div class="task-list">
+        <div class="task-list scrollable-container">
           {% for form in formset %}
             <div class="d-flex align-items-center justify-content-center mb-3 task-row">
               <img src="{% static '' %}{% if form.instance.completed %}project8/images/check.png{% else %}project8/images/uncheck.png{% endif %}"

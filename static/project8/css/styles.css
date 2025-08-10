@@ -488,3 +488,18 @@ body, html {
   margin: 0 auto;
   text-align: center;
 }
+
+.scrollable-container {
+  height: 60vh;
+  overflow-y: auto;
+  /* Hide scrollbar for IE, Edge */
+  -ms-overflow-style: none;
+
+  /* Hide scrollbar for Firefox */
+  scrollbar-width: none;
+}
+
+/* Hide scrollbar for Chrome, Safari */
+.scrollable-container::-webkit-scrollbar {
+  display: none;
+}

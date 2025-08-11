@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
 from django.contrib.auth.views import LoginView
 from django.views.generic import CreateView
 from django.urls import reverse_lazy
@@ -197,3 +197,13 @@ class HabitRecordToggleView(LoginRequiredMixin, View):
             record.delete()
             return JsonResponse({"status": "deleted"})
         return JsonResponse({"status": "created"})
+
+
+class ToDoHistoryView(ListView):
+    model = ToDoList
+    template_name = "history-todo.html"
+    context_object_name = "todo_lists"
+    paginate_by = 10
+
+    def get_queryset(self):
+        return ToDoList.objects.filter(user=self.request.user).order_by("-date")

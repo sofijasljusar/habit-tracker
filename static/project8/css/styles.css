@@ -503,3 +503,11 @@ body, html {
 .scrollable-container::-webkit-scrollbar {
   display: none;
 }
+
+
+.page-item.active .page-link {
+    background-color: #343a40 !important; /* Dark background */
+    border-color: #343a40 !important;
+    color: #fff !important;              /* White text */
+    box-shadow: none !important;         /* Remove any glowing/shiny effect */
+}

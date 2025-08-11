@@ -1,5 +1,8 @@
 {% load static %}
-<div class="bg-white bg-card w-100 h-100 py-5 text-center">
+<div class="bg-white bg-card w-100 h-100 py-5 text-center position-relative">
+    <a href="{% url 'todo-history' %}" class="position-absolute start-0 top-10 translate-middle-y ms-5">
+        <img src="{% static 'project8/images/back.svg' %}" height="24px" width="24px">
+    </a>
     <h3 class="text-shadow">To Do List</h3>
     <h5 class="text-decoration-underline">for {{ todo_list.date|date:"d-m-Y" }}</h5>
 

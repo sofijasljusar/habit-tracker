@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView, ListView
+from django.views.generic.detail import DetailView
 from django.contrib.auth.views import LoginView
 from django.views.generic import CreateView
 from django.urls import reverse_lazy
 from .forms import SignUpForm, LogInForm, ToDoItemFormSet
 from django.contrib.auth import login
-import datetime
 from .models import ToDoList, ToDoItem, Habit, HabitRecord
 from django.views import View
 from django.utils import timezone
@@ -13,8 +13,9 @@ from calendar import monthrange
 from django.db.models import Prefetch
 import calendar
 from django.http import JsonResponse
-from datetime import date
+from datetime import date, timedelta, datetime
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import get_object_or_404
 
 
 class HomeView(View):
@@ -22,8 +23,8 @@ class HomeView(View):
 
     def dispatch(self, request, *args, **kwargs):
         self.today = timezone.localtime(timezone.now()).date()
-        self.yesterday = self.today - datetime.timedelta(days=1)
-        self.tomorrow = self.today + datetime.timedelta(days=1)
+        self.yesterday = self.today - timedelta(days=1)
+        self.tomorrow = self.today + timedelta(days=1)
         return super().dispatch(request, *args, **kwargs)
 
     def get_todo_list(self, date):
@@ -157,7 +158,7 @@ class AboutView(TemplateView):
     template_name = "about.html"
 
 
-class BaseDetailView(LoginRequiredMixin, TemplateView):
+class BaseDetailView(LoginRequiredMixin, DetailView):
     template_name = "detail-page.html"
     include_template = None
 
@@ -172,7 +173,7 @@ class MonthDetailView(BaseDetailView):
 
 
 class DayDetailView(BaseDetailView):
-    include_template = "partials/day-detail.html"
+    include_template = "partials/day-editable-carousel.html"
 
 
 class HabitCreateView(LoginRequiredMixin, View):
@@ -207,3 +208,14 @@ class ToDoHistoryView(ListView):
 
     def get_queryset(self):
         return ToDoList.objects.filter(user=self.request.user).order_by("-date")
+
+
+class ToDoHistoryDetailView(BaseDetailView):
+    model = ToDoList
+    context_object_name = "todo_list"
+    include_template = "partials/day-readonly.html"
+
+    def get_object(self, queryset=None):
+        date_str = self.kwargs.get("date")
+        date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
+        return get_object_or_404(ToDoList, user=self.request.user, date=date_obj)

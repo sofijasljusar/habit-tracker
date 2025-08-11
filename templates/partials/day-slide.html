@@ -13,15 +13,15 @@
           {% for form in formset %}
             <div class="d-flex align-items-center justify-content-center mb-3 task-row">
               <img src="{% static '' %}{% if form.instance.completed %}project8/images/check.png{% else %}project8/images/uncheck.png{% endif %}"
-                class="toggle-img me-2" 
-                   data-index="{{ forloop.counter0 }}" 
+                class="toggle-img me-2"
+                   data-index="{{ forloop.counter0 }}"
                    data-prefix="{{ form.prefix }}"
-                   style="cursor: pointer; width: 34px;"  
+                   style="cursor: pointer; width: 34px;"
                    alt="toggle"/>
               {{ form.id }}
-              <input type="hidden" 
-                     name="{{ form.prefix }}-completed" 
-                     id="completed-{{ form.prefix }}-{{ forloop.counter0 }}" 
+              <input type="hidden"
+                     name="{{ form.prefix }}-completed"
+                     id="completed-{{ form.prefix }}-{{ forloop.counter0 }}"
                      value="{{ form.instance.completed|yesno:'true,false' }}">
               {{ form.title }}
             </div>

@@ -7,7 +7,7 @@
             <h2 class="my-3">History of To Do Lists</h2>
             <div class="list-group w-100">
                 {% for todo_list in todo_lists %}
-                        <a href="#" class="list-group-item list-group-item-action">
+                        <a href="{% url 'todo-history-detail' todo_list.date %}" class="list-group-item list-group-item-action">
                             {{ todo_list.date|date:"d-m-Y" }}
                         </a>
                 {% empty %}

@@ -10,12 +10,13 @@ from .models import ToDoList, ToDoItem, Habit, HabitRecord
 from django.views import View
 from django.utils import timezone
 from calendar import monthrange
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Count
 import calendar
 from django.http import JsonResponse
 from datetime import date, timedelta, datetime
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
+from django.db.models.functions import TruncMonth
 
 
 class HomeView(View):
@@ -219,3 +220,19 @@ class ToDoHistoryDetailView(BaseDetailView):
         date_str = self.kwargs.get("date")
         date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
         return get_object_or_404(ToDoList, user=self.request.user, date=date_obj)
+
+
+class HabitMonthHistoryView(ListView):
+    template_name = "history-habit-month.html"
+    context_object_name = "months_with_habits"
+    paginate_by = 10
+
+    def get_queryset(self):
+        user = self.request.user
+        return (
+            HabitRecord.objects.filter(habit__user=user)
+            .annotate(month=TruncMonth('date'))
+            .values('month')
+            .annotate(count=Count('id'))
+            .order_by('-month')
+        )

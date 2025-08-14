@@ -39,7 +39,7 @@ class HomeView(View):
         return ToDoItemFormSet(data=data, queryset=queryset, prefix=prefix)
 
     def get_month_calendar(self):
-        cal = calendar.Calendar(firstweekday=0) # Returns a matrix: each inner list represents a week (Mon = 0)
+        cal = calendar.Calendar(firstweekday=0)  # Returns a matrix: each inner list represents a week (Mon = 0)
         print(cal)
         return [
             [date(self.today.year, self.today.month, day) if day else None for day in week]
@@ -169,14 +169,6 @@ class BaseDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-class MonthDetailView(BaseDetailView):
-    include_template = "partials/month-detail.html"
-
-
-class DayDetailView(BaseDetailView):
-    include_template = "partials/day-editable-carousel.html"
-
-
 class HabitCreateView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         name = request.POST.get("name")
@@ -211,10 +203,10 @@ class ToDoHistoryView(ListView):
         return ToDoList.objects.filter(user=self.request.user).order_by("-date")
 
 
-class ToDoHistoryDetailView(BaseDetailView):
+class ToDoHistoryDetailView(DetailView):
     model = ToDoList
     context_object_name = "todo_list"
-    include_template = "partials/day-readonly.html"
+    template_name = "partials/day-readonly.html"
 
     def get_object(self, queryset=None):
         date_str = self.kwargs.get("date")

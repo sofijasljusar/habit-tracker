@@ -8,7 +8,8 @@ from .views import (HomeView,
                     HabitRecordToggleView,
                     ToDoHistoryView,
                     ToDoHistoryDetailView,
-                    HabitMonthHistoryView)
+                    HabitMonthHistoryView,
+                    HabitMonthHistoryDetailView)
 from django.contrib.auth.views import LogoutView
 
 
@@ -25,5 +26,6 @@ urlpatterns = [
     path('todo-history', ToDoHistoryView.as_view(), name="todo-history"),
     path('todo-history/<slug:date>', ToDoHistoryDetailView.as_view(), name="todo-history-detail"),
     path('habit-history', HabitMonthHistoryView.as_view(), name="habit-history"),
+    path('habit-history/<slug:month>', HabitMonthHistoryDetailView.as_view(), name="habit-history-detail"),
 
 ]

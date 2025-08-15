@@ -7,7 +7,7 @@
             <h2 class="my-3">History of Tracked Habits</h2>
             <div class="list-group w-100">
                 {% for month in months_with_habits %}
-                        <a href="#" class="list-group-item list-group-item-action">
+                        <a href="{% url 'habit-history-detail' month.month|date:'Y-m' %}" class="list-group-item list-group-item-action">
                             {{ month.month|date:"F Y" }}
                         </a>
                 {% empty %}

@@ -17,6 +17,7 @@ from datetime import date, timedelta, datetime
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.db.models.functions import TruncMonth
+from collections import defaultdict
 
 
 class HomeView(View):
@@ -228,3 +229,42 @@ class HabitMonthHistoryView(ListView):
             .annotate(count=Count('id'))
             .order_by('-month')
         )
+
+
+class HabitMonthHistoryDetailView(TemplateView):
+    template_name = "partials/month-readonly.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        month_str = self.kwargs.get('month')
+        month_date = datetime.strptime(month_str, "%Y-%m").date()
+
+        # Get the records of the current user for the given month
+        records_this_month = (
+            HabitRecord.objects
+            .filter(
+                habit__user=user,
+                date__year=month_date.year,
+                date__month=month_date.month
+            )
+            .select_related("habit")
+            .order_by("habit__name", "date")
+        )
+
+        # Create a dict of all records per habit
+        habit_data = defaultdict(list)
+        for record in records_this_month:
+            habit_data[record.habit].append(record.date)
+
+        data_for_template = [
+            {"habit": habit, "done_dates": done_dates}
+            for habit, done_dates in habit_data.items()
+        ]
+
+        context.update({
+            "month_date": month_date,
+            "habit_data_this_month": data_for_template
+        })
+
+        return context

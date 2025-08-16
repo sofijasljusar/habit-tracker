@@ -20,6 +20,9 @@ from django.db.models.functions import TruncMonth
 from collections import defaultdict
 
 
+WEEKDAYS = ["M", "T", "W", "T", "F", "S", "S"]
+
+
 class HomeView(View):
     template_name = "home.html"
 
@@ -41,7 +44,6 @@ class HomeView(View):
 
     def get_month_calendar(self):
         cal = calendar.Calendar(firstweekday=0)  # Returns a matrix: each inner list represents a week (Mon = 0)
-        print(cal)
         return [
             [date(self.today.year, self.today.month, day) if day else None for day in week]
             for week in cal.monthdayscalendar(self.today.year, self.today.month)]
@@ -55,7 +57,7 @@ class HomeView(View):
                 queryset=HabitRecord.objects.filter(date__gte=first_day, date__lte=last_day)
             )
         )
-        return habits, first_day, last_day
+        return habits, first_day
 
     def get_context_data(self, submitted_formset=None, prefix=None):
         formsets = {
@@ -68,7 +70,7 @@ class HomeView(View):
         if submitted_formset and prefix:
             formsets[prefix] = submitted_formset
 
-        habits, month_start, month_end = self.get_habits()
+        habits, month_start = self.get_habits()
 
         return {
             "date_yesterday": self.yesterday,
@@ -81,9 +83,9 @@ class HomeView(View):
             },
             "habits": habits,
             "month_start": month_start,
-            "month_end": month_end,
             "month_calendar": self.get_month_calendar(),
-            "weekdays": ["M", "T", "W", "T", "F", "S", "S"],
+            "weekdays": WEEKDAYS,
+            "editable": True,
         }
 
     def get_form_prefix_and_date(self, post_data):

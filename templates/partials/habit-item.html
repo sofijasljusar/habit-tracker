@@ -23,7 +23,7 @@
                     {% if day_record %}bg-info text-white{% else %}bg-light{% endif %}"
                     data-habit="{{ habit.id }}"
                     data-date="{{ current_date|date:'Y-m-d' }}"
-                    style="cursor: pointer;"
+                    {% if editable %}style="cursor: pointer;"{% endif %}
                   >
                     {{ current_date.day }}
                   </div>

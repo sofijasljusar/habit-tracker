@@ -242,31 +242,30 @@ class HabitMonthHistoryDetailView(TemplateView):
         month_str = self.kwargs.get('month')
         month_date = datetime.strptime(month_str, "%Y-%m").date()
 
-        # Get the records of the current user for the given month
-        records_this_month = (
-            HabitRecord.objects
-            .filter(
-                habit__user=user,
-                date__year=month_date.year,
-                date__month=month_date.month
+        first_day = month_date.replace(day=1)
+        last_day = month_date.replace(day=monthrange(month_date.year, month_date.month)[1])
+
+        active_habits_this_month = Habit.objects.filter(
+            user=user,
+            records__date__range=(first_day, last_day)
+        ).distinct().prefetch_related(
+            Prefetch(
+                'records',
+                queryset=HabitRecord.objects.filter(date__gte=first_day, date__lte=last_day)
             )
-            .select_related("habit")
-            .order_by("habit__name", "date")
         )
 
-        # Create a dict of all records per habit
-        habit_data = defaultdict(list)
-        for record in records_this_month:
-            habit_data[record.habit].append(record.date)
-
-        data_for_template = [
-            {"habit": habit, "done_dates": done_dates}
-            for habit, done_dates in habit_data.items()
-        ]
+        cal = calendar.Calendar(firstweekday=0)  # Returns a matrix: each inner list represents a week (Mon = 0)
+        month_calendar = [
+            [date(month_date.year, month_date.month, day) if day else None for day in week]
+            for week in cal.monthdayscalendar(month_date.year, month_date.month)]
 
         context.update({
-            "month_date": month_date,
-            "habit_data_this_month": data_for_template
+            "month_start": month_date,
+            "habits": active_habits_this_month,
+            "month_calendar": month_calendar,
+            "weekdays": WEEKDAYS,
+            "editable": False
         })
 
         return context

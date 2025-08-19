@@ -1,9 +1,12 @@
 <div class="bg-white bg-card w-100 h-100 text-center py-5">
   <h3 class="text-shadow">{{ month_start|date:"F" }} {{ month_start|date:"Y" }}</h3>
   <div class="mb-4">
-    <button class="btn border-dark" data-bs-toggle="modal" data-bs-target="#addHabitModal">Create a New Habit :D</button>
+    {% if editable %}
+        <button class="btn border-dark" data-bs-toggle="modal" data-bs-target="#addHabitModal">
+            Create a New Habit :D
+        </button>
+    {% endif %}
   </div>
-
   <div class="row g-3 scrollable-container">
     {% for habit in habits %}
       {% include 'partials/habit-item.html' with habit=habit %}

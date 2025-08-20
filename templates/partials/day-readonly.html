@@ -1,21 +1,15 @@
 {% extends "detail-page.html" %}
 {% load static %}
 {% block detail_content %}
-    <div class="bg-white bg-card w-100 h-100 py-5 text-center position-relative">
-        <a href="{% url 'todo-history' %}" class="position-absolute start-0 top-10 translate-middle-y ms-5">
-            <img src="{% static 'project8/images/back.svg' %}" height="24px" width="24px">
-        </a>
-        <h3 class="text-shadow">To Do List</h3>
-        <h5 class="text-decoration-underline">for {{ todo_list.date|date:"d-m-Y" }}</h5>
-    
-        <div class="task-list scrollable-container">
-              {% for item in todo_list.items.all %}
-                <div class="d-flex align-items-center justify-content-start mb-3 ms-5 task-row">
-                    <img src="{% static 'project8/images/' %}{% if item.completed %}check.png{% else %}uncheck.png{% endif %}"
-                         alt="completed" style="width: 34px; margin-right: 0.5rem;">
-                    <span>{{ item.title }}</span>
-                </div>
-              {% endfor %}
-        </div>
+    <h3 class="text-shadow">To Do List</h3>
+    <h5 class="text-decoration-underline">for {{ todo_list.date|date:"d-m-Y" }}</h5>
+    <div class="task-list scrollable-container">
+          {% for item in todo_list.items.all %}
+            <div class="d-flex align-items-center justify-content-start mb-3 ms-5 task-row">
+                <img src="{% static 'project8/images/' %}{% if item.completed %}check.png{% else %}uncheck.png{% endif %}"
+                     alt="completed" style="width: 34px; margin-right: 0.5rem;">
+                <span>{{ item.title }}</span>
+            </div>
+          {% endfor %}
     </div>
 {% endblock %}

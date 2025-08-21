@@ -3,7 +3,7 @@ from django.views.generic import TemplateView, ListView
 from django.views.generic.detail import DetailView
 from django.contrib.auth.views import LoginView
 from django.views.generic import CreateView
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from .forms import SignUpForm, LogInForm, ToDoItemFormSet
 from django.contrib.auth import login
 from .models import ToDoList, ToDoItem, Habit, HabitRecord
@@ -17,7 +17,6 @@ from datetime import date, timedelta, datetime
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.db.models.functions import TruncMonth
-from collections import defaultdict
 
 
 WEEKDAYS = ["M", "T", "W", "T", "F", "S", "S"]
@@ -216,6 +215,11 @@ class ToDoHistoryDetailView(DetailView):
         date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
         return get_object_or_404(ToDoList, user=self.request.user, date=date_obj)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['back_url'] = reverse("home")
+        return context
+
 
 class HabitMonthHistoryView(ListView):
     template_name = "history-habit-month.html"
@@ -265,7 +269,9 @@ class HabitMonthHistoryDetailView(TemplateView):
             "habits": active_habits_this_month,
             "month_calendar": month_calendar,
             "weekdays": WEEKDAYS,
-            "editable": False
+            "editable": False,
+            "back_url": reverse("habit-history")
+
         })
 
         return context

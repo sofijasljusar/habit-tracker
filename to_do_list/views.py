@@ -204,6 +204,11 @@ class ToDoHistoryView(ListView):
     def get_queryset(self):
         return ToDoList.objects.filter(user=self.request.user).order_by("-date")
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['back_url'] = reverse("history-menu")
+        return context
+
 
 class ToDoHistoryDetailView(DetailView):
     model = ToDoList
@@ -217,7 +222,7 @@ class ToDoHistoryDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['back_url'] = reverse("home")
+        context['back_url'] = reverse("todo-history")
         return context
 
 
@@ -235,6 +240,11 @@ class HabitMonthHistoryView(ListView):
             .annotate(count=Count('id'))
             .order_by('-month')
         )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['back_url'] = reverse("history-menu")
+        return context
 
 
 class HabitMonthHistoryDetailView(TemplateView):

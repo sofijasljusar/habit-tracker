@@ -511,3 +511,7 @@ body, html {
     color: #fff !important;              /* White text */
     box-shadow: none !important;         /* Remove any glowing/shiny effect */
 }
+
+.w-90 {
+    width: 90%;
+}

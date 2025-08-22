@@ -6,7 +6,7 @@
         <div class="col-12 d-flex flex-column align-items-center gap-5">
         
             <h2 class="my-3">History of To Do Lists</h2>
-            <div class="list-group w-100">
+            <div class="list-group w-90">
                 {% for todo_list in todo_lists %}
                         <a href="{% url 'todo-history-detail' todo_list.date %}" class="list-group-item list-group-item-action">
                             {{ todo_list.date|date:"d-m-Y" }}

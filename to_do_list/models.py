@@ -37,3 +37,13 @@ class HabitRecord(models.Model):
     class Meta:
         unique_together = ('habit', 'date')
         ordering = ['date']
+
+
+class HabitTrackingMonth(models.Model):
+    habit = models.ForeignKey(Habit, on_delete=models.CASCADE, related_name="months_tracked")
+    year = models.IntegerField()
+    month = models.IntegerField()
+
+    class Meta:
+        unique_together = ("habit", "year", "month")
+

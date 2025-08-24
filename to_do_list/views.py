@@ -18,7 +18,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.db.models.functions import TruncMonth
 
-
 WEEKDAYS = ["M", "T", "W", "T", "F", "S", "S"]
 
 
@@ -48,15 +47,19 @@ class HomeView(View):
             for week in cal.monthdayscalendar(self.today.year, self.today.month)]
 
     def get_habits(self):
-        first_day = self.today.replace(day=1)
-        last_day = self.today.replace(day=monthrange(self.today.year, self.today.month)[1])
-        habits = Habit.objects.filter(user=self.request.user).prefetch_related(
+        habits = (Habit.objects.filter(
+            user=self.request.user,
+            months_tracked__year=self.today.year,
+            months_tracked__month=self.today.month
+        ).prefetch_related(
             Prefetch(
                 'records',
-                queryset=HabitRecord.objects.filter(date__gte=first_day, date__lte=last_day)
+                queryset=HabitRecord.objects.filter(
+                    date__year=self.today.year,
+                    date__month=self.today.month)
             )
-        )
-        return habits, first_day
+        ))
+        return habits
 
     def get_context_data(self, submitted_formset=None, prefix=None):
         formsets = {
@@ -69,7 +72,7 @@ class HomeView(View):
         if submitted_formset and prefix:
             formsets[prefix] = submitted_formset
 
-        habits, month_start = self.get_habits()
+        habits = self.get_habits()
 
         return {
             "date_yesterday": self.yesterday,
@@ -81,7 +84,7 @@ class HomeView(View):
                 self.tomorrow: formsets["tomorrow"],
             },
             "habits": habits,
-            "month_start": month_start,
+            "month_date": self.today,
             "month_calendar": self.get_month_calendar(),
             "weekdays": WEEKDAYS,
             "editable": True,
@@ -275,7 +278,7 @@ class HabitMonthHistoryDetailView(TemplateView):
             for week in cal.monthdayscalendar(month_date.year, month_date.month)]
 
         context.update({
-            "month_start": month_date,
+            "month_date": month_date,
             "habits": active_habits_this_month,
             "month_calendar": month_calendar,
             "weekdays": WEEKDAYS,

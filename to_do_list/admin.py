@@ -1,3 +1,9 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import HabitTrackingMonth
+
+
+@admin.register(HabitTrackingMonth)
+class HabitTrackingMonthAdmin(admin.ModelAdmin):
+    list_display = ("habit", "year", "month")
+    list_filter = ("habit", "year", "month")

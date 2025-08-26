@@ -6,7 +6,7 @@ from django.views.generic import CreateView
 from django.urls import reverse_lazy, reverse
 from .forms import SignUpForm, LogInForm, ToDoItemFormSet
 from django.contrib.auth import login
-from .models import ToDoList, ToDoItem, Habit, HabitRecord
+from .models import ToDoList, ToDoItem, Habit, HabitRecord, HabitTrackingMonth
 from django.views import View
 from django.utils import timezone
 from calendar import monthrange
@@ -178,7 +178,13 @@ class HabitCreateView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         name = request.POST.get("name")
         if name:
-            Habit.objects.create(user=request.user, name=name)
+            habit = Habit.objects.create(user=request.user, name=name)
+            today = timezone.localtime(timezone.now()).date()
+            HabitTrackingMonth.objects.create(
+                habit=habit,
+                year=today.year,
+                month=today.month
+            )
         return redirect("home")
 
 

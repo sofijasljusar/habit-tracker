@@ -12,7 +12,7 @@
         <div class="task-list scrollable-container">
           {% for form in formset %}
             <div class="d-flex align-items-center justify-content-center mb-3 task-row">
-              <img src="{% static '' %}{% if form.instance.completed %}project8/images/check.png{% else %}project8/images/uncheck.png{% endif %}"
+              <img src="{% static '' %}{% if form.instance.completed %}project8/images/check1.svg{% else %}project8/images/uncheck1.svg{% endif %}"
                 class="toggle-img me-2"
                    data-index="{{ forloop.counter0 }}"
                    data-prefix="{{ form.prefix }}"

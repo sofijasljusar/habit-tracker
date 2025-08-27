@@ -6,7 +6,7 @@
     <div class="task-list scrollable-container">
           {% for item in todo_list.items.all %}
             <div class="d-flex align-items-center justify-content-start mb-3 ms-5 task-row">
-                <img src="{% static 'project8/images/' %}{% if item.completed %}check.png{% else %}uncheck.png{% endif %}"
+                <img src="{% static 'project8/images/' %}{% if item.completed %}check1.svg{% else %}uncheck1.svg{% endif %}"
                      alt="completed" style="width: 34px; margin-right: 0.5rem;">
                 <span>{{ item.title }}</span>
             </div>

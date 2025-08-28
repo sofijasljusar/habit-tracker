@@ -294,3 +294,7 @@ class HabitMonthHistoryDetailView(TemplateView):
         })
 
         return context
+
+
+class SettingsView(TemplateView):
+    template_name = "settings.html"

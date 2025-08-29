@@ -1,3 +1,7 @@
+:root {
+  --theme-color: #27DDF5;
+}
+
 .fullscreen-size {
     min-height: 80vh;
 }
@@ -480,7 +484,7 @@ body, html {
 }
 
 .title-input:focus {
-  border-bottom: 1px solid #27DDF5 !important;
+  border-bottom: 1px solid var(--theme-color) !important;
 }
 
 .todo-list-items {
@@ -514,4 +518,8 @@ body, html {
 
 .w-90 {
     width: 90%;
+}
+
+.nav-link.text-info {
+  color: var(--theme-color) !important;
 }

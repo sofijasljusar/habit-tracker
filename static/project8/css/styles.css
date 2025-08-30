@@ -523,3 +523,7 @@ body, html {
 .nav-link.text-info {
   color: var(--theme-color) !important;
 }
+
+.bg-theme {
+  background-color: var(--theme-color) !important;
+}

@@ -20,7 +20,7 @@
                 {% with day_record=habit.records|get_date:current_date %}
                   <div
                     class="rounded d-flex justify-content-center align-items-center h-100 w-100 habit-cell
-                    {% if day_record %}bg-info text-white{% else %}bg-light{% endif %}"
+                    {% if day_record %}bg-theme text-white{% else %}bg-light{% endif %}"
                     data-habit="{{ habit.id }}"
                     data-date="{{ current_date|date:'Y-m-d' }}"
                     {% if editable %}style="cursor: pointer;"{% endif %}

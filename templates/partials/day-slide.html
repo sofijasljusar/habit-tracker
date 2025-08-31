@@ -12,12 +12,24 @@
         <div class="task-list scrollable-container">
           {% for form in formset %}
             <div class="d-flex align-items-center justify-content-center mb-3 task-row">
-              <img src="{% static '' %}{% if form.instance.completed %}project8/images/check1.svg{% else %}project8/images/uncheck1.svg{% endif %}"
-                class="toggle-img me-2"
-                   data-index="{{ forloop.counter0 }}"
-                   data-prefix="{{ form.prefix }}"
-                   style="cursor: pointer; width: 34px;"
-                   alt="toggle"/>
+                <svg width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg" 
+                     style="cursor: pointer; width: 34px; height: 34px" class="me-2">
+                <g filter="url(#filter0_d_42_8)">
+                <rect x="12" y="15" width="30" height="30" rx="8" fill="var(--theme-color)" fill-opacity="0.5" stroke-opacity="0.5" shape-rendering="crispEdges"/>
+                </g>
+                <defs>
+                <filter id="filter0_d_42_8" x="10" y="13" width="38" height="38" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                <feOffset dx="2" dy="2"/>
+                <feGaussianBlur stdDeviation="2"/>
+                <feComposite in2="hardAlpha" operator="out"/>
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_42_8"/>
+                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_42_8" result="shape"/>
+                </filter>
+                </defs>
+                </svg>
               {{ form.id }}
               <input type="hidden"
                      name="{{ form.prefix }}-completed"

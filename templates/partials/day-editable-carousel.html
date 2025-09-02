@@ -25,18 +25,19 @@
 </div>
 
 <script>
-  document.querySelectorAll('.toggle-img').forEach((img) => {
-    const index = img.dataset.index;
-    const prefix = img.dataset.prefix;
-    
-    img.addEventListener('click', function () {
-      const hiddenInput = document.getElementById(`completed-${prefix}-${index}`);
+    document.querySelectorAll('.checkbox-svg').forEach(svg => {
+      const checkMark = svg.querySelector('.check-mark');
+      const hiddenInput = document.getElementById(`completed-${svg.dataset.prefix}-${svg.dataset.index}`);
       const isCompleted = hiddenInput.value === "true";
-
-      const newState = !isCompleted;
-      hiddenInput.value = newState ? "true" : "false";
-
-      this.src = `{% static 'project8/images/' %}${newState ? 'check1.svg' : 'uncheck1.svg'}`;
+    
+      // Initialize mark visibility
+      checkMark.style.display = isCompleted ? 'block' : 'none';
+        
+      svg.addEventListener('click', () => {
+        const isCompleted = hiddenInput.value === "true";
+        const newState = !isCompleted;
+        hiddenInput.value = newState ? 'true' : 'false';
+        checkMark.style.display = newState ? 'block' : 'none';
+      });
     });
-  });
 </script>

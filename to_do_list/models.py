@@ -47,3 +47,10 @@ class HabitTrackingMonth(models.Model):
     class Meta:
         unique_together = ("habit", "year", "month")
 
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    theme_color = models.CharField(max_length=7, default="27DDF5")
+
+    def __str__(self):
+        return f"{self.user.username.capitalize()} Profile"

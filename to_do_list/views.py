@@ -6,7 +6,7 @@ from django.views.generic import CreateView
 from django.urls import reverse_lazy, reverse
 from .forms import SignUpForm, LogInForm, ToDoItemFormSet
 from django.contrib.auth import login
-from .models import ToDoList, ToDoItem, Habit, HabitRecord, HabitTrackingMonth
+from .models import ToDoList, ToDoItem, Habit, HabitRecord, HabitTrackingMonth, UserProfile
 from django.views import View
 from django.utils import timezone
 from calendar import monthrange
@@ -17,6 +17,7 @@ from datetime import date, timedelta, datetime
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.db.models.functions import TruncMonth
+import json
 
 WEEKDAYS = ["M", "T", "W", "T", "F", "S", "S"]
 
@@ -298,3 +299,20 @@ class HabitMonthHistoryDetailView(TemplateView):
 
 class SettingsView(TemplateView):
     template_name = "settings.html"
+
+
+class UpdateThemeColorView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        try:
+            data = json.loads(request.body)
+            color = data.get("theme_color")
+
+            if color and color.startswith("#") and len(color) == 7:
+                profile, _ = UserProfile.objects.get_or_create(user=request.user)
+                profile.theme_color = color
+                profile.save()
+                return JsonResponse({"status": "ok"})
+        except json.JSONDecodeError:
+            pass
+
+        return JsonResponse({"status": "error"}, status=400)

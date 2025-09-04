@@ -10,7 +10,8 @@ from .views import (HomeView,
                     ToDoHistoryDetailView,
                     HabitMonthHistoryView,
                     HabitMonthHistoryDetailView,
-                    SettingsView)
+                    SettingsView,
+                    UpdateThemeColorView)
 from django.contrib.auth.views import LogoutView
 
 
@@ -29,5 +30,6 @@ urlpatterns = [
     path('habit-history', HabitMonthHistoryView.as_view(), name="habit-history"),
     path('habit-history/<slug:month>', HabitMonthHistoryDetailView.as_view(), name="habit-history-detail"),
     path('settings/', SettingsView.as_view(), name='settings'),
+    path('update-theme-color/', UpdateThemeColorView.as_view(), name="update_theme_color"),
 
 ]

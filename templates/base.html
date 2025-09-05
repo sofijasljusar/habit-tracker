@@ -1,3 +1,4 @@
+{% load color_tags %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -14,7 +15,11 @@
         <style>
           :root {
             --theme-color: {{ request.user.userprofile.theme_color|default:"#27DDF5" }};
+            --theme-color-dark: {{ request.user.userprofile.theme_color|darken:20 }};  
+            --theme-color-alpha50: rgba({{ request.user.userprofile.theme_color|hex_to_rgb }}, 0.5);
+            --theme-color-alpha80: rgba({{ request.user.userprofile.theme_color|hex_to_rgb }}, 0.8);
           }
+          
         </style>
     </head>
     <body>

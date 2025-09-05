@@ -222,21 +222,21 @@ button:hover {
 }
 
 .login100-form-btn {
-  background-color: #27DDF5;
-  box-shadow: 0 10px 30px 0px rgba(39, 221, 245, 0.5);
-  -moz-box-shadow: 0 10px 30px 0px rgba(39, 221, 245, 0.5);
-  -webkit-box-shadow: 0 10px 30px 0px rgba(39, 221, 245, 0.5);
-  -o-box-shadow: 0 10px 30px 0px rgba(39, 221, 245, 0.5);
-  -ms-box-shadow: 0 10px 30px 0px rgba(39, 221, 245, 0.5);
+  background-color: var(--theme-color);
+  box-shadow: 0 10px 30px 0px var(--theme-color-alpha50);
+  -moz-box-shadow: 0 10px 30px 0px var(--theme-color-alpha50);
+  -webkit-box-shadow: 0 10px 30px 0px var(--theme-color-alpha50);
+  -o-box-shadow: 0 10px 30px 0px var(--theme-color-alpha50);
+  -ms-box-shadow: 0 10px 30px 0px var(--theme-color-alpha50);
 }
 
 .login100-form-btn:hover {
-  background-color: #1EADC7; /* Slightly deeper shade for hover */
-  box-shadow: 0 10px 30px 0px rgba(39, 221, 245, 0.8);
-  -moz-box-shadow: 0 10px 30px 0px rgba(39, 221, 245, 0.8);
-  -webkit-box-shadow: 0 10px 30px 0px rgba(39, 221, 245, 0.8);
-  -o-box-shadow: 0 10px 30px 0px rgba(39, 221, 245, 0.8);
-  -ms-box-shadow: 0 10px 30px 0px rgba(39, 221, 245, 0.8);
+  background-color: var(--theme-color-dark); /* Slightly deeper shade for hover */
+  box-shadow: 0 10px 30px 0px var(--theme-color-alpha80);
+  -moz-box-shadow: 0 10px 30px 0px var(--theme-color-alpha80);
+  -webkit-box-shadow: 0 10px 30px 0px var(--theme-color-alpha80);
+  -o-box-shadow: 0 10px 30px 0px var(--theme-color-alpha80);
+  -ms-box-shadow: 0 10px 30px 0px var(--theme-color-alpha80);
 }
 
 

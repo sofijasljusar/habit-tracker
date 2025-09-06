@@ -494,13 +494,16 @@ body, html {
 }
 
 .scrollable-container {
-  height: 60vh;
   overflow-y: auto;
   /* Hide scrollbar for IE, Edge */
   -ms-overflow-style: none;
 
   /* Hide scrollbar for Firefox */
   scrollbar-width: none;
+}
+
+.h-60 {
+  height: 60vh;
 }
 
 /* Hide scrollbar for Chrome, Safari */

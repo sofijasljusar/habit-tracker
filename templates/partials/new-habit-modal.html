@@ -1,11 +1,11 @@
-<div class="modal fade" id="addHabitModal" tabindex="-1" aria-labelledby="addHabitModalLabel" aria-hidden="true">
+<div class="modal fade" id="addNewHabitModal" tabindex="-1" aria-labelledby="addNewHabitModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
 
       <form method="POST" action="{% url 'add-habit' %}">
         {% csrf_token %}
         <div class="modal-header">
-          <h5 class="modal-title" id="addHabitModalLabel">Small consistent effort...</h5>
+          <h5 class="modal-title" id="addNewHabitModalLabel">Small consistent effort...</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
 

@@ -316,3 +316,37 @@ class UpdateThemeColorView(LoginRequiredMixin, View):
             pass
 
         return JsonResponse({"status": "error"}, status=400)
+
+
+class OldHabitsModalView(View):
+    def get(self, request):
+        today = date.today()
+        user_habits = Habit.objects.filter(user=request.user)
+        tracked_this_month = HabitTrackingMonth.objects.filter(
+            habit__user=request.user,
+            year=today.year,
+            month=today.month
+        ).values_list('habit_id', flat=True)
+        habits_to_track = user_habits.exclude(id__in=tracked_this_month)
+
+        data = [{"id": habit.id, "name": habit.name} for habit in habits_to_track]
+        return JsonResponse({"habits": data})
+
+
+class TrackOldHabitsView(View):
+    def post(self, request):
+        today = date.today()
+        habit_ids = request.POST.getlist("habits")
+
+        for habit_id in habit_ids:
+            try:
+                habit = Habit.objects.get(id=habit_id, user=request.user)
+                HabitTrackingMonth.objects.get_or_create(
+                    habit=habit,
+                    year=today.year,
+                    month=today.month
+                )
+            except Habit.DoesNotExist:
+                continue
+
+        return redirect("home")

@@ -9,7 +9,7 @@
         {% csrf_token %}
         {{ formset.management_form }}
     
-        <div class="task-list scrollable-container">
+        <div class="task-list scrollable-container h-60">
           {% for form in formset %}
             <div class="d-flex align-items-center justify-content-center mb-3 task-row">
                 <svg width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg"

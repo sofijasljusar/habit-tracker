@@ -3,7 +3,7 @@
 {% block detail_content %}
     <h3 class="text-shadow">To Do List</h3>
     <h5 class="text-decoration-underline">for {{ todo_list.date|date:"d-m-Y" }}</h5>
-    <div class="task-list scrollable-container">
+    <div class="task-list scrollable-container h-60">
           {% for item in todo_list.items.all %}
             <div class="d-flex align-items-center justify-content-start mb-3 ms-5 task-row">
                 <svg width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg"

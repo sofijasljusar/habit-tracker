@@ -3,12 +3,12 @@
 <div class="mb-4">
 {% if editable %}
     <button class="btn border-dark" data-bs-toggle="modal" data-bs-target="#addHabitModal">
-        Create a New Habit :D
+        Add Habit :D
     </button>
 {% endif %}
 </div>
 
-<div class="row g-3 scrollable-container">
+<div class="row g-3 scrollable-container h-60">
     {% for habit in habits %}
         {% include 'partials/habit-item.html' with habit=habit %}
     {% endfor %}

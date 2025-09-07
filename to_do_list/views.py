@@ -332,8 +332,6 @@ class OldHabitsModalView(View):
         data = [{"id": habit.id, "name": habit.name} for habit in habits_to_track]
         return JsonResponse({"habits": data})
 
-
-class TrackOldHabitsView(View):
     def post(self, request):
         today = date.today()
         habit_ids = request.POST.getlist("habits")

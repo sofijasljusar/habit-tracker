@@ -12,7 +12,8 @@ from .views import (HomeView,
                     HabitMonthHistoryDetailView,
                     SettingsView,
                     UpdateThemeColorView,
-                    OldHabitsModalView)
+                    OldHabitsModalView,
+                    UntrackHabitsModalView)
 from django.contrib.auth.views import LogoutView
 
 
@@ -33,5 +34,6 @@ urlpatterns = [
     path('settings/', SettingsView.as_view(), name='settings'),
     path('update-theme-color/', UpdateThemeColorView.as_view(), name="update_theme_color"),
     path('old-habits/', OldHabitsModalView.as_view(), name='old_habits'),
+    path('untrack-habits/', UntrackHabitsModalView.as_view(), name='untrack_habits'),
 
 ]

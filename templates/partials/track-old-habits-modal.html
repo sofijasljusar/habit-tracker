@@ -1,10 +1,10 @@
-<div class="modal fade" id="addOldHabitsModal" tabindex="-1" aria-labelledby="addOldHabitsModalLabel" aria-hidden="true">
+<div class="modal fade" id="trackOldHabitsModal" tabindex="-1" aria-labelledby="trackOldHabitsModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-        <form id="oldHabitsForm" method="post" action="{% url 'track_old_habits' %}">
+        <form id="oldHabitsForm" method="post" action="{% url 'old_habits' %}">
             {% csrf_token %}
             <div class="modal-header">
-              <h5 class="modal-title" id="addOldHabitsModalLabel">Scroll and select...</h5>
+              <h5 class="modal-title" id="trackOldHabitsModalLabel">Scroll and select...</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
     
@@ -24,7 +24,7 @@
   </div>
 </div>
 <script>
-document.getElementById('addHabitModal').addEventListener('show.bs.modal', function () {
+document.getElementById('trackOldHabitsModal').addEventListener('show.bs.modal', function () {
     const container = document.getElementById('existingHabitsContainer');
     container.innerHTML = '<p>Loading...</p>';
 

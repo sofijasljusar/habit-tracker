@@ -4,9 +4,10 @@
         {% include 'partials/month-habits.html' %}
     </div>
 
-    {% include 'partials/add-habit-modal.html' %}
+    {% include 'partials/edit-habits-modal.html' %}
     {% include 'partials/new-habit-modal.html' %}
-    {% include 'partials/old-habits-modal.html' %}
+    {% include 'partials/track-old-habits-modal.html' %}
+    {% include 'partials/untrack-habits-modal.html' %}
 
     <script>
       document.querySelectorAll('.habit-cell').forEach(cell => {

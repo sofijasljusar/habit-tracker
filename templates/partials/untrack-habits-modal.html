@@ -1,0 +1,66 @@
+<div class="modal fade" id="untrackHabitsModal" tabindex="-1" aria-labelledby="untrackHabitsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+        <form id="untrackHabitsForm" method="post" action="{% url 'untrack_habits' %}">
+            {% csrf_token %}
+            <div class="modal-header">
+              <h5 class="modal-title" id="untrackHabitsModalLabel">Scroll and select...</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+    
+            <div class="modal-body">
+              <div class="scrollable-container d-flex flex-column gap-3" style="height: 100px">
+                <div id="trackedHabitsContainer" class="w-100 d-flex flex-column gap-3">
+                  <!-- Habits will be loaded here via AJAX -->
+                </div>
+              </div>
+            </div>
+    
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-outline-dark">Save</button>
+            </div>
+        </form>    
+    </div>
+  </div>
+</div>
+<script>
+document.getElementById('untrackHabitsModal').addEventListener('show.bs.modal', function () {
+    const container = document.getElementById('trackedHabitsContainer');
+    container.innerHTML = '<p>Loading...</p>';
+
+    fetch("{% url 'untrack_habits' %}")
+        .then(response => response.json())
+        .then(data => {
+            container.innerHTML = '';
+            if (data.habits.length === 0) {
+                container.innerHTML = "<p class=\"text-muted\">You don't track any habits this month!</p>";
+            } else {
+                data.habits.forEach(habit => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'btn btn-outline-dark w-100';
+                    btn.textContent = habit.name;
+                    
+                    // Hidden input (added when selected)
+                    let input = null;
+                    btn.addEventListener('click', () => {
+                        btn.classList.toggle('btn-outline-dark');
+                        btn.classList.toggle('btn-dark');
+
+                        if (!input) {
+                            input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = 'habits';
+                            input.value = habit.id;
+                            document.getElementById('untrackHabitsForm').appendChild(input);
+                        } else {
+                            input.remove();
+                            input = null;
+                        }
+                    });
+                    container.appendChild(btn);
+                });
+            }
+        });
+});
+</script>

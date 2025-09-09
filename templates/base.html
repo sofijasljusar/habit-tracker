@@ -14,10 +14,17 @@
         <link href="https://fonts.googleapis.com/css2?family=Klee+One&display=swap" rel="stylesheet">
         <style>
           :root {
-            --theme-color: {{ request.user.userprofile.theme_color|default:"#27DDF5" }};
-            --theme-color-dark: {{ request.user.userprofile.theme_color|darken:20 }};  
-            --theme-color-alpha50: rgba({{ request.user.userprofile.theme_color|hex_to_rgb }}, 0.5);
-            --theme-color-alpha80: rgba({{ request.user.userprofile.theme_color|hex_to_rgb }}, 0.8);
+              {% if request.user.is_authenticated %}
+                --theme-color: {{ request.user.userprofile.theme_color|default:"#27DDF5" }};
+                --theme-color-dark: {{ request.user.userprofile.theme_color|darken:20 }};  
+                --theme-color-alpha50: rgba({{ request.user.userprofile.theme_color|hex_to_rgb }}, 0.5);
+                --theme-color-alpha80: rgba({{ request.user.userprofile.theme_color|hex_to_rgb }}, 0.8);
+              {% else %}
+                --theme-color: #27DDF5;
+                --theme-color-dark: #1EADC7;
+                --theme-color-alpha50: rgba(39, 221, 245, 0.5);
+                --theme-color-alpha80: rgba(39, 221, 245, 0.8);
+              {% endif %}
           }
           
         </style>

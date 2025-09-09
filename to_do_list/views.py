@@ -320,7 +320,7 @@ class UpdateThemeColorView(LoginRequiredMixin, View):
 
 class OldHabitsModalView(View):
     def get(self, request):
-        today = date.today()
+        today = timezone.localtime(timezone.now()).date()
         user_habits = Habit.objects.filter(user=request.user)
         tracked_this_month = HabitTrackingMonth.objects.filter(
             habit__user=request.user,
@@ -333,7 +333,7 @@ class OldHabitsModalView(View):
         return JsonResponse({"habits": data})
 
     def post(self, request):
-        today = date.today()
+        today = timezone.localtime(timezone.now()).date()
         habit_ids = request.POST.getlist("habits")
 
         for habit_id in habit_ids:
@@ -352,7 +352,7 @@ class OldHabitsModalView(View):
 
 class UntrackHabitsModalView(View):
     def get(self, request):
-        today = date.today()
+        today = timezone.localtime(timezone.now()).date()
         user_habits = Habit.objects.filter(user=request.user)
         tracked_this_month = HabitTrackingMonth.objects.filter(
             habit__user=request.user,
@@ -366,7 +366,7 @@ class UntrackHabitsModalView(View):
         return JsonResponse({"habits": data})
 
     def post(self, request):
-        today = date.today()
+        today = timezone.localtime(timezone.now()).date()
         habit_ids = request.POST.getlist("habits")
 
         for habit_id in habit_ids:
@@ -380,4 +380,4 @@ class UntrackHabitsModalView(View):
             except Habit.DoesNotExist:
                 continue
 
-            return redirect("home")
+        return redirect("home")

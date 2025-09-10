@@ -40,4 +40,17 @@
         checkMark.style.display = newState ? 'block' : 'none';
       });
     });
+    
+    document.querySelectorAll('.title-input').forEach(input => {
+        const row = input.closest('.task-row');
+        const deleteInput = row.querySelector('input[name$="-DELETE"]');
+        
+        if (!deleteInput) return;
+        
+        deleteInput.addEventListener('change', () => {
+            input.classList.toggle('crossed-out', deleteInput.checked);
+        });
+    });
+    
+    
 </script>

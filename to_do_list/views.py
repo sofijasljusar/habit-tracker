@@ -233,6 +233,7 @@ class ToDoHistoryDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['back_url'] = reverse("todo-history")
+        context['editable'] = False
         return context
 
 

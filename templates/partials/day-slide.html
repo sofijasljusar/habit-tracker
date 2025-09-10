@@ -43,6 +43,9 @@
                      id="completed-{{ form.prefix }}-{{ forloop.counter0 }}"
                      value="{{ form.instance.completed|yesno:'true,false' }}">
               {{ form.title }}
+              {% if editable and form.instance.pk%}
+                  {{ form.DELETE }}
+              {% endif %}
             </div>
           {% endfor %}
         </div>

@@ -530,3 +530,7 @@ body, html {
 .bg-theme {
   background-color: var(--theme-color) !important;
 }
+
+.crossed-out {
+  text-decoration: line-through;
+}

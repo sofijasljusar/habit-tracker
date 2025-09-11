@@ -44,10 +44,12 @@
     document.querySelectorAll('.title-input').forEach(input => {
         const row = input.closest('.task-row');
         const deleteInput = row.querySelector('input[name$="-DELETE"]');
+        const deleteToggle = row.querySelector('.delete-toggle');
         
         if (!deleteInput) return;
         
-        deleteInput.addEventListener('change', () => {
+        deleteToggle.addEventListener('click', () => {
+            deleteInput.checked = !deleteInput.checked;
             input.classList.toggle('crossed-out', deleteInput.checked);
         });
     });

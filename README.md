@@ -1,34 +1,41 @@
 # ✅ Habit Tracker
 
 ## Overview
-A full-stack application (backend-focused) for tracking habits and generating time-based progress insights.
+Backend-focused Django application for tracking personal habits and daily tasks.
 
-The system is built around the natural time structures users rely on (days, weeks, months), making it intuitive to track consistency and long-term progress.
+The application is built around date-driven workflows (daily and monthly views), allowing users to manage tasks, track habits, and review history over time.
 
 ## Key Features
-- Time-based tracking and aggregation
-- JWT-based authentication
-- Monthly analytics and progress insights
+- Daily task management
+- Habit tracking with per-day records
+- Progress history
 
 ## Architecture & Design
-Built with Django and PostgreSQL, with emphasis on clean architecture, modularity, and separation of concerns.
+Built with Django, using Django REST Framework (DRF) to expose selected functionality via API endpoints.
 
-The system models time explicitly as a core part of the domain, enabling efficient aggregation and meaningful analytics.
+### Domain Modeling
+The core domain is centered around time-based user behavior:
+- `Habit` — habit definition
+- `HabitRecord` — completion on a specific date
+- `HabitTrackingMonth` — controls which habits are active in a given month
 
-Key design considerations:
-- Domain-driven modeling around time-based behavior
-- Efficient aggregation queries for analytics
-- Authentication and user isolation
+This separation allows flexible tracking, reuse of habits across months, and efficient querying for calendar and history views.
 
-## Tech Stack
-- Django
-- PostgreSQL
-- JWT authentication
+### Backend Logic
+- Non-trivial date handling (multiple day views, calendar generation)
+- Formsets for managing multiple related objects
+- User-scoped data access across all views
+- Formsets for managing multiple related objects in a single request
+
+### Data Access & Performance
+- Query optimization using `prefetch_related`
+- Filtered prefetching for month-specific data
+- Aggregations using `TruncMonth` and `Count` for history views
 
 ## What I Focused On
-- Designing a domain model centered around time-based user behavior
-- Building modular and maintainable backend architecture
-- Implementing efficient aggregation logic for analytics
+- Implementing non-trivial backend logic around dates and tracking
+- Writing efficient ORM queries for real-world use cases
+- Building a complete, user-facing backend-driven application
 
 ## Installation & Run
 Create new folder and open in IDE, in terminal run:

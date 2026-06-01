@@ -5,7 +5,6 @@ from .views import (HomeView,
                     HistoryMenuView,
                     AboutView,
                     HabitCreateView,
-                    HabitRecordToggleView,
                     ToDoHistoryView,
                     ToDoHistoryDetailView,
                     HabitMonthHistoryView,
@@ -14,6 +13,7 @@ from .views import (HomeView,
                     UpdateThemeColorView,
                     OldHabitsModalView,
                     UntrackHabitsModalView)
+from .api_views import HabitRecordToggleView
 from django.contrib.auth.views import LogoutView
 
 
@@ -23,8 +23,7 @@ urlpatterns = [
     path('login/', LogInView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(next_page='home'), name='logout'),
     path('add-habit/', HabitCreateView.as_view(), name='add-habit'),
-    path('toggle-habit/<int:habit_id>/<int:year>/<int:month>/<int:day>/',
-         HabitRecordToggleView.as_view(), name='toggle-habit'),
+    path('api/habits/toggle/', HabitRecordToggleView.as_view(), name='habit-toggle'),
     path('old-habits/', OldHabitsModalView.as_view(), name='old-habits'),
     path('untrack-habits/', UntrackHabitsModalView.as_view(), name='untrack-habits'),
     path('history/', HistoryMenuView.as_view(), name='history-menu'),

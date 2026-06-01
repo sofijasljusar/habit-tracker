@@ -189,22 +189,6 @@ class HabitCreateView(LoginRequiredMixin, View):
         return redirect("home")
 
 
-class HabitRecordToggleView(LoginRequiredMixin, View):
-    def post(self, request, habit_id, year, month, day):
-        try:
-            habit = Habit.objects.get(id=habit_id, user=request.user)
-        except Habit.DoesNotExist:
-            return JsonResponse({"error": "Habit not found"}, status=404)
-
-        habit_date = date(year, month, day)
-        record, created = HabitRecord.objects.get_or_create(habit=habit, date=habit_date)
-
-        if not created:
-            record.delete()
-            return JsonResponse({"status": "deleted"})
-        return JsonResponse({"status": "created"})
-
-
 class ToDoHistoryView(ListView):
     model = ToDoList
     template_name = "history-todo.html"

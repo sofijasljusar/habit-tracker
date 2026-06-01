@@ -10,17 +10,37 @@
     {% include 'partials/untrack-habits-modal.html' %}
 
     <script>
+      function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+
       document.querySelectorAll('.habit-cell').forEach(cell => {
         cell.addEventListener('click', async () => {
           const habitId = cell.dataset.habit;
-          const dateStr = cell.dataset.date; // YYYY-MM-DD string
-          const [year, month, day] = dateStr.split('-');
+          const dateStr = cell.dataset.date;
 
-          const response = await fetch(`/toggle-habit/${habitId}/${year}/${month}/${day}/`, {
+          const response = await fetch("{% url 'habit-toggle' %}", {
             method: 'POST',
             headers: {
-              'X-CSRFToken': '{{ csrf_token }}',
+              'X-CSRFToken': getCookie('csrftoken'),
+              'Content-Type': 'application/json',
             },
+            body: JSON.stringify({
+                habit_id: habitId,
+                date: dateStr
+            })
+
           });
 
           if (response.ok) {

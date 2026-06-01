@@ -1,7 +1,7 @@
 <div class="modal fade" id="trackOldHabitsModal" tabindex="-1" aria-labelledby="trackOldHabitsModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-        <form id="oldHabitsForm" method="post" action="{% url 'old_habits' %}">
+        <form id="oldHabitsForm" method="post" action="{% url 'old-habits' %}">
             {% csrf_token %}
             <div class="modal-header">
               <h5 class="modal-title" id="trackOldHabitsModalLabel">Scroll and select...</h5>
@@ -28,7 +28,7 @@ document.getElementById('trackOldHabitsModal').addEventListener('show.bs.modal',
     const container = document.getElementById('existingHabitsContainer');
     container.innerHTML = '<p>Loading...</p>';
 
-    fetch("{% url 'old_habits' %}")
+    fetch("{% url 'old-habits' %}")
         .then(response => response.json())
         .then(data => {
             container.innerHTML = '';

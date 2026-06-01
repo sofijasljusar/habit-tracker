@@ -27,7 +27,7 @@
       const hex = color.hexString;
       document.documentElement.style.setProperty('--theme-color', hex); // update live
       
-      fetch("{% url 'update_theme_color' %}", {
+      fetch("{% url 'update-theme-color' %}", {
           method: "POST",
           headers: {
               "Content-Type": "application/json",

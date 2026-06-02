@@ -21,6 +21,40 @@ from .utils import build_month_calendar
 WEEKDAYS = ["M", "T", "W", "T", "F", "S", "S"]
 
 
+class LogInView(LoginView):
+    template_name = "auth.html"
+    authentication_form = LogInForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Log In"
+        return context
+
+
+class SignUpView(CreateView):
+    form_class = SignUpForm
+    template_name = "auth.html"
+    success_url = reverse_lazy("home")
+
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user)
+        return redirect(self.success_url)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Sign Up"
+        return context
+
+
+class SettingsView(TemplateView):
+    template_name = "settings.html"
+
+
+class AboutView(TemplateView):
+    template_name = "about.html"
+
+
 class HomeView(View):
     template_name = "home.html"
 
@@ -142,62 +176,8 @@ class HomeView(View):
         return render(request, self.template_name, self.get_context_data(submitted_formset=formset, prefix=prefix))
 
 
-class LogInView(LoginView):
-    template_name = "auth.html"
-    authentication_form = LogInForm
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Log In"
-        return context
-
-
-class SignUpView(CreateView):
-    form_class = SignUpForm
-    template_name = "auth.html"
-    success_url = reverse_lazy("home")
-
-    def form_valid(self, form):
-        user = form.save()
-        login(self.request, user)
-        return redirect(self.success_url)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Sign Up"
-        return context
-
-
 class HistoryMenuView(LoginRequiredMixin, TemplateView):
     template_name = "history-menu.html"
-
-
-class AboutView(TemplateView):
-    template_name = "about.html"
-
-
-class BaseDetailView(LoginRequiredMixin, DetailView):
-    template_name = "detail-page.html"
-    include_template = None
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["include_template"] = self.include_template
-        return context
-
-
-class HabitCreateView(LoginRequiredMixin, View):
-    def post(self, request, *args, **kwargs):
-        name = request.POST.get("name")
-        if name:
-            habit = Habit.objects.create(user=request.user, name=name)
-            today = timezone.localdate()
-            HabitTrackingMonth.objects.create(
-                habit=habit,
-                year=today.year,
-                month=today.month
-            )
-        return redirect("home")
 
 
 class ToDoHistoryView(ListView):
@@ -288,8 +268,18 @@ class HabitMonthHistoryDetailView(TemplateView):
         return context
 
 
-class SettingsView(TemplateView):
-    template_name = "settings.html"
+class HabitCreateView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        name = request.POST.get("name")
+        if name:
+            habit = Habit.objects.create(user=request.user, name=name)
+            today = timezone.localdate()
+            HabitTrackingMonth.objects.create(
+                habit=habit,
+                year=today.year,
+                month=today.month
+            )
+        return redirect("home")
 
 
 class TrackHabitsView(LoginRequiredMixin, View):

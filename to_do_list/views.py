@@ -11,12 +11,12 @@ from django.views import View
 from django.utils import timezone
 from calendar import monthrange
 from django.db.models import Prefetch, Count
-import calendar
-from datetime import date, timedelta, datetime
+from datetime import timedelta, datetime
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.db.models.functions import TruncMonth
 from django.utils.dateparse import parse_date
+from .utils import build_month_calendar
 
 WEEKDAYS = ["M", "T", "W", "T", "F", "S", "S"]
 
@@ -30,21 +30,11 @@ class HomeView(View):
         self.tomorrow = self.today + timedelta(days=1)
         return super().dispatch(request, *args, **kwargs)
 
+
     def get_todo_list(self, date):
         if self.request.user.is_authenticated:
             return ToDoList.objects.filter(user=self.request.user, date=date).first()
         return None
-
-    def get_formset_for_date(self, date, prefix, data=None):
-        todo_list = self.get_todo_list(date)
-        queryset = todo_list.items.all() if todo_list else ToDoItem.objects.none()
-        return ToDoItemFormSet(data=data, queryset=queryset, prefix=prefix)
-
-    def get_month_calendar(self):
-        cal = calendar.Calendar(firstweekday=0)  # Returns a matrix: each inner list represents a week (Mon = 0)
-        return [
-            [date(self.today.year, self.today.month, day) if day else None for day in week]
-            for week in cal.monthdayscalendar(self.today.year, self.today.month)]
 
     def get_habits(self):
         habits = (Habit.objects.filter(
@@ -61,18 +51,21 @@ class HomeView(View):
         ))
         return habits
 
-    def get_context_data(self, submitted_formset=None, prefix=None):
+    def get_formset_for_date(self, date, prefix, data=None):
+        todo_list = self.get_todo_list(date)
+        queryset = todo_list.items.all() if todo_list else ToDoItem.objects.none()
+        return ToDoItemFormSet(data=data, queryset=queryset, prefix=prefix)
+
+
+    def get_formset_context(self, submitted_formset=None, prefix=None):
         formsets = {
             "yesterday": self.get_formset_for_date(self.yesterday, prefix="yesterday"),
             "today": self.get_formset_for_date(self.today, prefix="today"),
             "tomorrow": self.get_formset_for_date(self.tomorrow, prefix="tomorrow")
         }
 
-        # If these arguments are set - how formset containing errors
         if submitted_formset and prefix:
             formsets[prefix] = submitted_formset
-
-        habits = self.get_habits()
 
         return {
             "date_yesterday": self.yesterday,
@@ -83,14 +76,31 @@ class HomeView(View):
                 self.today: formsets["today"],
                 self.tomorrow: formsets["tomorrow"],
             },
-            "habits": habits,
+        }
+
+    def get_habit_context(self):
+        return {
+            "habits": self.get_habits(),
+        }
+
+    def get_calendar_context(self):
+        return {
             "month_date": self.today,
-            "month_calendar": self.get_month_calendar(),
+            "month_calendar": build_month_calendar(self.today.year, self.today.month),
             "weekdays": WEEKDAYS,
             "editable": True,
         }
 
-    def get_form_prefix_and_date(self, post_data):
+    def get_context_data(self, submitted_formset=None, prefix=None):
+        context = {}
+
+        context.update(self.get_formset_context(submitted_formset=submitted_formset, prefix=prefix))
+        context.update(self.get_habit_context())
+        context.update(self.get_calendar_context())
+        return context
+
+
+    def get_submitted_formset_info(self, post_data):
         for prefix, date_obj in {
             "yesterday": self.yesterday,
             "today": self.today,
@@ -99,6 +109,16 @@ class HomeView(View):
             if f"{prefix}-TOTAL_FORMS" in post_data:
                 return prefix, date_obj
         return None, None
+
+    def save_formset(self, formset, date_obj):
+        todo_list = self.get_todo_list(date_obj) or ToDoList.objects.create(user=self.request.user, date=date_obj)
+        instances = formset.save(commit=False)
+        for instance in instances:
+            instance.to_do_list = todo_list
+            instance.save()
+        for obj in formset.deleted_objects:
+            obj.delete()
+
 
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -109,24 +129,16 @@ class HomeView(View):
         if not request.user.is_authenticated:
             return render(request, "welcome.html")
 
-        # Detect which formset is being submitted by checking the management form key
-        prefix, date_obj = self.get_form_prefix_and_date(request.POST)
+        prefix, date_obj = self.get_submitted_formset_info(request.POST)
         if not prefix:
             return redirect('home')
 
         formset = self.get_formset_for_date(date_obj, prefix=prefix, data=request.POST)
 
         if formset.is_valid():
-            todo_list = self.get_todo_list(date_obj) or ToDoList.objects.create(user=request.user, date=date_obj)
-            instances = formset.save(commit=False)
-            for instance in instances:
-                instance.to_do_list = todo_list
-                instance.save()
-            for obj in formset.deleted_objects:
-                obj.delete()
+            self.save_formset(formset, date_obj)
             return redirect('home')
 
-        # If invalid, reload formsets but replace submitted one with errors
         return render(request, self.template_name, self.get_context_data(submitted_formset=formset, prefix=prefix))
 
 
@@ -263,15 +275,10 @@ class HabitMonthHistoryDetailView(TemplateView):
             )
         )
 
-        cal = calendar.Calendar(firstweekday=0)  # Returns a matrix: each inner list represents a week (Mon = 0)
-        month_calendar = [
-            [date(month_date.year, month_date.month, day) if day else None for day in week]
-            for week in cal.monthdayscalendar(month_date.year, month_date.month)]
-
         context.update({
             "month_date": month_date,
             "habits": active_habits_this_month,
-            "month_calendar": month_calendar,
+            "month_calendar": build_month_calendar(month_date.year, month_date.month),
             "weekdays": WEEKDAYS,
             "editable": False,
             "back_url": reverse("habit-history")

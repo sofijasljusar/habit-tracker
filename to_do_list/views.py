@@ -12,12 +12,11 @@ from django.utils import timezone
 from calendar import monthrange
 from django.db.models import Prefetch, Count
 import calendar
-from django.http import JsonResponse
 from datetime import date, timedelta, datetime
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.db.models.functions import TruncMonth
-import json
+from django.utils.dateparse import parse_date
 
 WEEKDAYS = ["M", "T", "W", "T", "F", "S", "S"]
 
@@ -211,7 +210,7 @@ class ToDoHistoryDetailView(DetailView):
 
     def get_object(self, queryset=None):
         date_str = self.kwargs.get("date")
-        date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
+        date_obj = parse_date(date_str)
         return get_object_or_404(ToDoList, user=self.request.user, date=date_obj)
 
     def get_context_data(self, **kwargs):

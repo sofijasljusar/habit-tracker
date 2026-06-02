@@ -1,7 +1,7 @@
 <div class="modal fade" id="untrackHabitsModal" tabindex="-1" aria-labelledby="untrackHabitsModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-        <form id="untrackHabitsForm" method="post" action="{% url 'untrack-habits' %}">
+        <form id="untrackHabitsForm" method="post" action="{% url 'habits-untrack' %}">
             {% csrf_token %}
             <div class="modal-header">
               <h5 class="modal-title" id="untrackHabitsModalLabel">Scroll and select...</h5>
@@ -28,7 +28,7 @@ document.getElementById('untrackHabitsModal').addEventListener('show.bs.modal', 
     const container = document.getElementById('trackedHabitsContainer');
     container.innerHTML = '<p>Loading...</p>';
 
-    fetch("{% url 'untrack-habits' %}")
+    fetch("{% url 'habits-tracked' %}")
         .then(response => response.json())
         .then(data => {
             container.innerHTML = '';

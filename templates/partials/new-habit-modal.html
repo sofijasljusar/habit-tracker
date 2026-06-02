@@ -2,7 +2,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
 
-      <form method="POST" action="{% url 'add-habit' %}">
+      <form method="POST" action="{% url 'habit-add' %}">
         {% csrf_token %}
         <div class="modal-header">
           <h5 class="modal-title" id="addNewHabitModalLabel">Small consistent effort...</h5>

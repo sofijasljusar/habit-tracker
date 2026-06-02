@@ -1,31 +1,39 @@
 from django.urls import path
-from .views import (HomeView,
-                    SignUpView,
-                    LogInView,
-                    HistoryMenuView,
-                    AboutView,
-                    HabitCreateView,
-                    ToDoHistoryView,
-                    ToDoHistoryDetailView,
-                    HabitMonthHistoryView,
-                    HabitMonthHistoryDetailView,
-                    SettingsView,
-                    UpdateThemeColorView,
-                    OldHabitsModalView,
-                    UntrackHabitsModalView)
-from .api_views import HabitRecordToggleView
 from django.contrib.auth.views import LogoutView
 
+from .views import (
+    HomeView,
+    SignUpView,
+    LogInView,
+    HistoryMenuView,
+    AboutView,
+    HabitCreateView,
+    ToDoHistoryView,
+    ToDoHistoryDetailView,
+    HabitMonthHistoryView,
+    HabitMonthHistoryDetailView,
+    SettingsView,
+    UpdateThemeColorView,
+    TrackHabitsView,
+    UntrackHabitsView,
+)
+from .api_views import (
+    HabitRecordToggleView,
+    AvailableHabitsAPIView,
+    TrackedHabitsAPIView
+)
 
 urlpatterns = [
     path('', HomeView.as_view(), name='home'),
     path('signup/', SignUpView.as_view(), name='signup'),
     path('login/', LogInView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(next_page='home'), name='logout'),
-    path('add-habit/', HabitCreateView.as_view(), name='add-habit'),
+    path('habits/add/', HabitCreateView.as_view(), name='habit-add'),
     path('api/habits/toggle/', HabitRecordToggleView.as_view(), name='habit-toggle'),
-    path('old-habits/', OldHabitsModalView.as_view(), name='old-habits'),
-    path('untrack-habits/', UntrackHabitsModalView.as_view(), name='untrack-habits'),
+    path('api/habits/available/', AvailableHabitsAPIView.as_view(), name='habits-available'),
+    path('habits/track/', TrackHabitsView.as_view(), name='habits-track'),
+    path('api/habits/tracked/', TrackedHabitsAPIView.as_view(), name='habits-tracked'),
+    path('habits/untrack/', UntrackHabitsView.as_view(), name='habits-untrack'),
     path('history/', HistoryMenuView.as_view(), name='history-menu'),
     path('todo-history/', ToDoHistoryView.as_view(), name="todo-history"),
     path('todo-history/<slug:date>/', ToDoHistoryDetailView.as_view(), name="todo-history-detail"),

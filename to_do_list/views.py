@@ -26,7 +26,7 @@ class HomeView(View):
     template_name = "home.html"
 
     def dispatch(self, request, *args, **kwargs):
-        self.today = timezone.localtime(timezone.now()).date()
+        self.today = timezone.localdate()
         self.yesterday = self.today - timedelta(days=1)
         self.tomorrow = self.today + timedelta(days=1)
         return super().dispatch(request, *args, **kwargs)
@@ -180,7 +180,7 @@ class HabitCreateView(LoginRequiredMixin, View):
         name = request.POST.get("name")
         if name:
             habit = Habit.objects.create(user=request.user, name=name)
-            today = timezone.localtime(timezone.now()).date()
+            today = timezone.localdate()
             HabitTrackingMonth.objects.create(
                 habit=habit,
                 year=today.year,
@@ -303,66 +303,39 @@ class UpdateThemeColorView(LoginRequiredMixin, View):
         return JsonResponse({"status": "error"}, status=400)
 
 
-class OldHabitsModalView(View):
-    def get(self, request):
-        today = timezone.localtime(timezone.now()).date()
-        user_habits = Habit.objects.filter(user=request.user)
-        tracked_this_month = HabitTrackingMonth.objects.filter(
-            habit__user=request.user,
-            year=today.year,
-            month=today.month
-        ).values_list('habit_id', flat=True)
-        habits_to_track = user_habits.exclude(id__in=tracked_this_month)
-
-        data = [{"id": habit.id, "name": habit.name} for habit in habits_to_track]
-        return JsonResponse({"habits": data})
-
+class TrackHabitsView(LoginRequiredMixin, View):
     def post(self, request):
-        today = timezone.localtime(timezone.now()).date()
+        today = timezone.localdate()
         habit_ids = request.POST.getlist("habits")
+        habits = Habit.objects.filter(
+            user=request.user,
+            id__in=habit_ids,
+        )
 
-        for habit_id in habit_ids:
-            try:
-                habit = Habit.objects.get(id=habit_id, user=request.user)
-                HabitTrackingMonth.objects.get_or_create(
-                    habit=habit,
-                    year=today.year,
-                    month=today.month
-                )
-            except Habit.DoesNotExist:
-                continue
+        for habit in habits:
+            HabitTrackingMonth.objects.get_or_create(
+                habit=habit,
+                year=today.year,
+                month=today.month
+            )
 
         return redirect("home")
 
 
-class UntrackHabitsModalView(View):
-    def get(self, request):
-        today = timezone.localtime(timezone.now()).date()
-        user_habits = Habit.objects.filter(user=request.user)
-        tracked_this_month = HabitTrackingMonth.objects.filter(
-            habit__user=request.user,
-            year=today.year,
-            month=today.month
-        ).values_list('habit_id', flat=True)
-        habits_to_untrack = user_habits.filter(id__in=tracked_this_month)
-
-        data = [{"id": habit.id, "name": habit.name} for habit in habits_to_untrack]
-        print(data)
-        return JsonResponse({"habits": data})
-
+class UntrackHabitsView(LoginRequiredMixin ,View):
     def post(self, request):
-        today = timezone.localtime(timezone.now()).date()
+        today = timezone.localdate()
         habit_ids = request.POST.getlist("habits")
+        habits = Habit.objects.filter(
+            user=request.user,
+            id__in=habit_ids,
+        )
 
-        for habit_id in habit_ids:
-            try:
-                habit = Habit.objects.get(id=habit_id, user=request.user)
-                HabitTrackingMonth.objects.filter(
-                    habit=habit,
-                    year=today.year,
-                    month=today.month
-                ).delete()
-            except Habit.DoesNotExist:
-                continue
+        for habit in habits:
+            HabitTrackingMonth.objects.filter(
+                habit=habit,
+                year=today.year,
+                month=today.month
+            ).delete()
 
         return redirect("home")

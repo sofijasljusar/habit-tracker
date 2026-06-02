@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from django.utils import timezone
 
-from .serializers import ToggleHabitRecordSerializer
+from .serializers import ToggleHabitRecordSerializer, HabitSerializer
 from .models import Habit, HabitRecord, HabitTrackingMonth
 
 
@@ -49,8 +49,8 @@ class AvailableHabitsAPIView(APIView):
         tracked_this_month = get_tracked_habit_ids(user=request.user)
         habits_to_track = user_habits.exclude(id__in=tracked_this_month)
 
-        data = [{"id": habit.id, "name": habit.name} for habit in habits_to_track]
-        return Response({"habits": data})
+        serializer = HabitSerializer(habits_to_track, many=True)
+        return Response({"habits": serializer.data})
 
 
 class TrackedHabitsAPIView(APIView):
@@ -61,5 +61,5 @@ class TrackedHabitsAPIView(APIView):
         tracked_this_month = get_tracked_habit_ids(user=request.user)
         habits_to_untrack = user_habits.filter(id__in=tracked_this_month)
 
-        data = [{"id": habit.id, "name": habit.name} for habit in habits_to_untrack]
-        return Response({"habits": data})
+        serializer = HabitSerializer(habits_to_untrack, many=True)
+        return Response({"habits": serializer.data})

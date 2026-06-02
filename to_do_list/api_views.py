@@ -1,11 +1,12 @@
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
+from rest_framework import status
 from django.utils import timezone
+from django.shortcuts import get_object_or_404
 
-from .serializers import ToggleHabitRecordSerializer, HabitSerializer
-from .models import Habit, HabitRecord, HabitTrackingMonth
+from .serializers import ToggleHabitRecordSerializer, HabitSerializer, ThemeColorSerializer
+from .models import Habit, HabitRecord, HabitTrackingMonth, UserProfile
 
 
 def get_tracked_habit_ids(user):
@@ -17,7 +18,6 @@ def get_tracked_habit_ids(user):
     ).values_list("habit_id", flat=True)
 
 
-
 class HabitRecordToggleView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -27,14 +27,12 @@ class HabitRecordToggleView(APIView):
 
         habit_id = serializer.validated_data["habit_id"]
         date = serializer.validated_data["date"]
-
         habit = get_object_or_404(Habit, id=habit_id, user=request.user)
 
         record, created = HabitRecord.objects.get_or_create(
             habit=habit,
             date=date
         )
-
         if not created:
             record.delete()
             return Response({"status": "deleted"})
@@ -63,3 +61,16 @@ class TrackedHabitsAPIView(APIView):
 
         serializer = HabitSerializer(habits_to_untrack, many=True)
         return Response({"habits": serializer.data})
+
+
+class UpdateThemeColorView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = ThemeColorSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        profile.theme_color = serializer.validated_data["theme_color"]
+        profile.save(update_fields=["theme_color"])
+        return Response(status=status.HTTP_204_NO_CONTENT)

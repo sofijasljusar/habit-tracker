@@ -13,14 +13,14 @@ from .views import (
     HabitMonthHistoryView,
     HabitMonthHistoryDetailView,
     SettingsView,
-    UpdateThemeColorView,
     TrackHabitsView,
     UntrackHabitsView,
 )
 from .api_views import (
     HabitRecordToggleView,
     AvailableHabitsAPIView,
-    TrackedHabitsAPIView
+    TrackedHabitsAPIView,
+    UpdateThemeColorView,
 )
 
 urlpatterns = [
@@ -40,6 +40,6 @@ urlpatterns = [
     path('habit-history/', HabitMonthHistoryView.as_view(), name="habit-history"),
     path('habit-history/<slug:month>/', HabitMonthHistoryDetailView.as_view(), name="habit-history-detail"),
     path('settings/', SettingsView.as_view(), name='settings'),
-    path('update-theme-color/', UpdateThemeColorView.as_view(), name="update-theme-color"),
+    path('update-theme-color/', UpdateThemeColorView.as_view(), name="theme-update"),
     path('about/', AboutView.as_view(), name='about'),
 ]

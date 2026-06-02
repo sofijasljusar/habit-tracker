@@ -23,14 +23,13 @@ This separation allows flexible tracking, reuse of habits across months, and eff
 
 ### Backend Logic
 - Non-trivial date handling (multiple day views, calendar generation)
-- Formsets for managing multiple related objects
 - User-scoped data access across all views
 - Formsets for managing multiple related objects in a single request
 
 ### Data Access & Performance
 - Query optimization using `prefetch_related`
 - Filtered prefetching for month-specific data
-- Aggregations using `TruncMonth` and `Count` for history views
+- Historical views with time-based aggregation
 
 ## What I Focused On
 - Implementing non-trivial backend logic around dates and tracking
